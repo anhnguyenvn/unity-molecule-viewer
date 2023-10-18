@@ -66,8 +66,6 @@ namespace UMol
         {
             public static string path;
             private static APIPython instance;
-
-            private static PythonConsole2 pythonConsole;
             private static CultureInfo culture = CultureInfo.InvariantCulture;
 
             void Awake()
@@ -75,26 +73,8 @@ namespace UMol
                 instance = this;
 
                 path = Application.dataPath;
-                PythonConsole2[] objs = FindObjectsOfType<PythonConsole2>();
-                if ( objs.Length == 0 )
-                {
-                    Debug.LogWarning("Couldn't find the python console object");
-                }
-                else
-                {
-                    pythonConsole = objs[0];
-                }
             }
-
-
-            /// <summary>
-            /// Allow to call python API commands and record them in the history from C#
-            /// </summary>
-            public static void ExecuteCommand(string command)
-            {
-                pythonConsole.ExecuteCommand(command);
-            }
-
+            
 
             /// <summary>
             /// Load a local molecular file (pdb/mmcif/gro/mol2/sdf/xyz formats)
@@ -135,14 +115,6 @@ namespace UMol
                         Debug.LogError("Could not load file " + filePath);
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("load(filePath=\"" + filePath.Replace("\\", "/") + "\", readHetm=" +
-                                                 cBoolToPy(readHetm) + ", forceDSSP=" +
-                                                 cBoolToPy(forceDSSP) + ", showDefaultRep=" +
-                                                 cBoolToPy(showDefaultRep) + ", modelsAsTraj=" +
-                                                 cBoolToPy(modelsAsTraj) +
-                                                 ", center=" + cBoolToPy(center) + ")");
-                UnityMolMain.recordUndoPythonCommand("delete(\"" + newStruct.uniqueName + "\")");
 
                 return newStruct;
             }
@@ -195,16 +167,6 @@ namespace UMol
                         {
                             Debug.LogError("Could not load file content");
                         }
-
-                        UnityMolMain.recordPythonCommand("loadFromString(fileName=\"" + fileName +
-                                                         "\", fileContent= \"" +
-                                                         fileContent + "\", readHetm=" + cBoolToPy(readHetm) +
-                                                         ", forceDSSP=" +
-                                                         cBoolToPy(forceDSSP) + ", showDefaultRep=" +
-                                                         cBoolToPy(showDefaultRep) +
-                                                         ", center=" + cBoolToPy(center) + ", modelsAsTraj=" +
-                                                         cBoolToPy(modelsAsTraj) + ")");
-                        UnityMolMain.recordUndoPythonCommand("delete(\"" + newStruct.uniqueName + "\")");
                     }
                 }
                 finally
@@ -255,15 +217,6 @@ namespace UMol
                     defaultRep(sel.name);
                 if ( center )
                     centerOnStructure(newStruct.uniqueName, recordCommand: false);
-
-                UnityMolMain.recordPythonCommand("fetch(PDBId=\"" + PDBId + "\", usemmCIF=" + cBoolToPy(usemmCIF) +
-                                                 ", readHetm=" + cBoolToPy(readHetm) + ", forceDSSP=" +
-                                                 cBoolToPy(forceDSSP) + ", showDefaultRep=" +
-                                                 cBoolToPy(showDefaultRep) + ", modelsAsTraj=" +
-                                                 cBoolToPy(modelsAsTraj) +
-                                                 ", center=" + cBoolToPy(center) + ")");
-
-                UnityMolMain.recordUndoPythonCommand("delete(\"" + newStruct.uniqueName + "\")");
 
                 return newStruct;
             }
@@ -323,10 +276,6 @@ namespace UMol
                 {
                     Debug.LogError("Structure not found");
                 }
-
-                UnityMolMain.recordPythonCommand("loadBondsXML(\"" + structureName + "\", \"" +
-                                                 filePath.Replace("\\", "/") + "\", " + modelId + ")");
-                UnityMolMain.recordUndoPythonCommand("unloadCustomBonds(\"" + structureName + "\", " + modelId + ")");
             }
 
             public static void overrideBondsWithXML(string structureName, int modelId = -1)
@@ -373,9 +322,6 @@ namespace UMol
                         Debug.LogError("No bonds parsed from a XML file in this model");
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("overrideBondsWithXML(\"" + structureName + "\", " + modelId + ")");
-                UnityMolMain.recordUndoPythonCommand("restoreBonds(\"" + structureName + "\", " + modelId + ")");
             }
 
             public static void restoreBonds(string structureName, int modelId = -1)
@@ -414,10 +360,6 @@ namespace UMol
                         Debug.LogError("No bonds parsed from a XML file in this model");
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("restoreBonds(\"" + structureName + "\", " + modelId + ")");
-                UnityMolMain.recordUndoPythonCommand("overrideBondsWithXML(\"" + structureName + "\", " + modelId +
-                                                     ")");
             }
 
             public static void unloadCustomBonds(string structureName, int modelId)
@@ -442,9 +384,6 @@ namespace UMol
                 {
                     Debug.LogError("Structure not found");
                 }
-
-                UnityMolMain.recordPythonCommand("unloadCustomBonds(\"" + structureName + "\", " + modelId + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -500,10 +439,6 @@ namespace UMol
                     }
 
                     UnityMolMain.getPrecompRepManager().Clear(s.uniqueName);
-
-                    UnityMolMain.recordPythonCommand("switchSSAssignmentMethod(\"" + structureName + "\"," +
-                                                     cBoolToPy(forceDSSP) + ")");
-                    UnityMolMain.recordUndoPythonCommand("switchSSAssignmentMethod(\"" + structureName + "\")");
                 }
             }
 
@@ -560,9 +495,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("showHideHydrogensInSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("showHideHydrogensInSelection(\"" + selName + "\")");
             }
 
 
@@ -618,9 +550,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("showHideSideChainsInSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("showHideSideChainsInSelection(\"" + selName + "\")");
             }
 
             /// <summary>
@@ -674,9 +603,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("showHideBackboneInSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("showHideBackboneInSelection(\"" + selName + "\")");
             }
 
             /// <summary>
@@ -702,9 +628,6 @@ namespace UMol
                 }
 
                 s.setModel(modelId);
-
-                UnityMolMain.recordPythonCommand("setModel(\"" + structureName + "\", " + modelId + ")");
-                UnityMolMain.recordUndoPythonCommand("setModel(\"" + structureName + "\", " + prev + ")");
             }
 
             /// <summary>
@@ -736,10 +659,6 @@ namespace UMol
 #endif
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("loadTraj(\"" + structureName + "\", \"" + path.Replace("\\", "/") +
-                                                 "\")");
-                UnityMolMain.recordUndoPythonCommand("unloadTraj(\"" + structureName + "\")");
             }
 
             /// <summary>
@@ -757,9 +676,6 @@ namespace UMol
 
                 UnityMolStructure s = sm.GetStructure(structureName);
                 s.unloadTrajectoryXDR();
-
-                UnityMolMain.recordPythonCommand("unloadTraj(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -787,10 +703,6 @@ namespace UMol
                     Debug.LogError("Could not load DX map file '" + path + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("loadDXmap(\"" + structureName + "\", \"" + path.Replace("\\", "/") +
-                                                 "\")");
-                UnityMolMain.recordUndoPythonCommand("unloadDXmap(\"" + structureName + "\")");
             }
 
             /// <summary>
@@ -809,9 +721,6 @@ namespace UMol
                 UnityMolStructure s = sm.GetStructure(structureName);
 
                 s.unloadDX();
-
-                UnityMolMain.recordPythonCommand("unloadDXmap(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -838,10 +747,6 @@ namespace UMol
                 deleteRepresentationInSelection(s.ToSelectionName(), "fl");
 
                 repManager.AddRepresentation(s, AtomType.fieldlines, BondType.nobond, flr);
-
-                UnityMolMain.recordPythonCommand("readJSONFieldlines(\"" + structureName + "\", \"" +
-                                                 path.Replace("\\", "/") + "\")");
-                UnityMolMain.recordUndoPythonCommand("unloadJSONFieldlines(\"" + structureName + "\")");
             }
 
             /// <summary>
@@ -858,9 +763,6 @@ namespace UMol
 
                 UnityMolStructure s = sm.GetStructure(structureName);
                 s.currentModel.fieldLinesR = null;
-
-                UnityMolMain.recordPythonCommand("unloadJSONFieldlines(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -885,11 +787,6 @@ namespace UMol
                         flRep.recompute(val);
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("setFieldlineGradientThreshold(\"" + selName + "\", " +
-                                                 val.ToString("f3", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setFieldlineGradientThreshold(\"" + selName + "\", " +
-                                                     prev.ToString("f3", culture) + ")");
             }
 
             /// <summary>
@@ -963,9 +860,6 @@ namespace UMol
                     Debug.LogWarning("No molecule loaded name '" + structureName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setStructureGroup(\"" + structureName + "\", " + newGroup + ")");
-                UnityMolMain.recordUndoPythonCommand("setStructureGroup(\"" + structureName + "\", " + prevGroup + ")");
             }
 
             /// <summary>
@@ -987,9 +881,6 @@ namespace UMol
                     Debug.LogWarning("No molecule loaded name '" + structureName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("delete(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -1033,9 +924,6 @@ namespace UMol
                     Debug.LogError("Wrong representation type");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("show(\"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("hide(\"" + type + "\")");
             }
 
             /// <summary>
@@ -1089,9 +977,6 @@ namespace UMol
                     Debug.LogError("Wrong representation type");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("show(\"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("hide(\"" + type + "\")");
             }
 
             /// <summary>
@@ -1197,11 +1082,6 @@ namespace UMol
                 {
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("showDefault(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("hideSelection(\"" + selName + "\", \"c\")\nhideSelection(\"" +
-                                                     selName + "\", \"hb\")\nhideSelection(\"" +
-                                                     (selName + "_not_protein") + "\", \"hb\")");
             }
 
             public static void waitOneFrame()
@@ -1239,9 +1119,6 @@ namespace UMol
                     Debug.LogWarning("No molecule loaded name '" + structureName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("showStructureAllRepresentations(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("hideStructureAllRepresentations(\"" + structureName + "\")");
             }
 
             /// <summary>
@@ -1325,9 +1202,6 @@ namespace UMol
                 }
 
                 command += ")";
-                UnityMolMain.recordPythonCommand(command);
-
-                UnityMolMain.recordUndoPythonCommand("hideSelection(\"" + selName + "\", \"" + type + "\")");
             }
 
             /// <summary>
@@ -1353,9 +1227,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("hideSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("showSelection(\"" + selName + "\")");
             }
 
             /// <summary>
@@ -1395,9 +1266,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("hideSelection(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("showSelection(\"" + selName + "\", \"" + type + "\")");
             }
 
             /// <summary>
@@ -1429,10 +1297,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("deleteRepresentationInSelection(\"" + selName + "\", \"" + type +
-                                                 "\")");
-                UnityMolMain.recordUndoPythonCommand("showSelection(\"" + selName + "\", \"" + type + "\")");
             }
 
             /// <summary>
@@ -1454,9 +1318,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("deleteRepresentationsInSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -1484,9 +1345,6 @@ namespace UMol
                     Debug.LogWarning("No molecule loaded name '" + structureName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("hideStructureAllRepresentations(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("showStructureAllRepresentations(\"" + structureName + "\")");
             }
 
             /// <summary>
@@ -1595,9 +1453,6 @@ namespace UMol
                     Debug.LogError("Wrong representation type");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("hide(\"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("show(\"" + type + "\")");
             }
 
             /// <summary>
@@ -1632,9 +1487,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("switchSurfaceComputeMethod(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("switchSurfaceComputeMethod(\"" + selName + "\")");
             }
 
             /// <summary>
@@ -1669,9 +1521,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("switchCutSurface(\"" + selName + "\", " + isCut + ")");
-                UnityMolMain.recordUndoPythonCommand("switchCutSurface(\"" + selName + "\", " + !isCut + ")");
             }
 
 
@@ -1744,20 +1593,6 @@ namespace UMol
                     return;
                 }
 
-                UnityMolMain.recordPythonCommand("setSolidSurface(\"" + selName + "\")");
-
-                if ( wasTransparent )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setTransparentSurface(\"" + selName + "\")");
-                }
-                else if ( wasWireframe )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setWireframeSurface(\"" + selName + "\")");
-                }
-                else
-                {
-                    UnityMolMain.recordUndoPythonCommand("");
-                }
             }
 
             /// <summary>
@@ -1837,21 +1672,6 @@ namespace UMol
                 {
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
-                }
-
-                UnityMolMain.recordPythonCommand("setWireframeSurface(\"" + selName + "\")");
-
-                if ( wasTransparent )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setTransparentSurface(\"" + selName + "\")");
-                }
-                else if ( wasSolid )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setSolidSurface(\"" + selName + "\")");
-                }
-                else
-                {
-                    UnityMolMain.recordUndoPythonCommand("");
                 }
             }
 
@@ -1941,22 +1761,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setTransparentSurface(\"" + selName + "\", " +
-                                                 alpha.ToString("f1", culture) + ")");
-
-                if ( wasWireframe )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setWireframeSurface(\"" + selName + "\")");
-                }
-                else if ( wasSolid )
-                {
-                    UnityMolMain.recordUndoPythonCommand("setSolidSurface(\"" + selName + "\")");
-                }
-                else
-                {
-                    UnityMolMain.recordUndoPythonCommand("");
-                }
             }
 
             /// <summary>
@@ -1988,11 +1792,6 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("updateDXIso(\"" + selName + "\", " + newVal.ToString("F3", culture) +
-                                                 ")");
-                UnityMolMain.recordUndoPythonCommand("updateDXIso(\"" + selName + "\", " +
-                                                     prevVal.ToString("F3", culture) + ")");
             }
 
             /// <summary>
@@ -2042,10 +1841,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setSmoothness(\"" + selName + "\", \"" + type + "\", " +
-                                                 val.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2096,10 +1891,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setMetal(\"" + selName + "\", \"" + type + "\", " +
-                                                 val.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2143,10 +1934,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setSurfaceWireframe(\"" + selName + "\", \"" + type + "\", " +
-                                                 val.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2232,10 +2019,6 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("setHyperBallMetaphore(\"" + metaphore + "\", " +
-                                                 cBoolToPy(forceAOOff) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2326,10 +2109,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setHyperBallMetaphore(\"" + selName + "\", \"" + metaphore + "\", " +
-                                                 cBoolToPy(forceAOOff) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2371,11 +2150,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setHyperBallShininess(\"" + selName + "\", " +
-                                                 shin.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setHyperBallShininess(\"" + selName + "\", " +
-                                                     prev.ToString("f2", culture) + ")");
             }
 
             /// <summary>
@@ -2415,11 +2189,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setHyperballShrink(\"" + selName + "\", " +
-                                                 shrink.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setHyperballShrink(\"" + selName + "\", " +
-                                                     prev.ToString("f2", culture) + ")");
             }
 
 
@@ -2472,9 +2241,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setHyperballTexture(\"" + selName + "\", " + idTex + ")");
-                UnityMolMain.recordUndoPythonCommand("setHyperballTexture(\"" + selName + "\", 0)");
             }
 
             /// <summary>
@@ -2528,9 +2294,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setBondOrderTexture(\"" + selName + "\", " + idTex + ")");
-                UnityMolMain.recordUndoPythonCommand("setBondOrderTexture(\"" + selName + "\", 0)");
             }
 
 
@@ -2563,9 +2326,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("clearHyperballAO(\"" + selName + "\"s)");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             public static void clearSurfaceAO(string selName)
@@ -2597,9 +2357,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("clearSurfaceAO(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             public static void increaseAmbientLight()
@@ -2669,10 +2426,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand(String.Format(CultureInfo.InvariantCulture,
-                    "setCartoonColorSS(\"{0}\", \"{1}\", {2})", selName, ssType, col));
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2725,10 +2478,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setRepSize(\"" + selName + "\", \"" + type + "\", " +
-                                                 size.ToString("f2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setRepSize(\"" + selName + "\", \"" + type + "\", 1.0)");
             }
 
 
@@ -2781,10 +2530,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand(String.Format(CultureInfo.InvariantCulture,
-                    "colorSelection(\"{0}\", \"{1}\", {2})", selName, type, col));
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2797,10 +2542,6 @@ namespace UMol
                 colorS = colorS.ToLower();
                 Color col = strToColor(colorS);
                 colorSelection(selName, type, col);
-
-                UnityMolMain.recordPythonCommand("colorSelection(\"" + selName + "\", \"" + type + "\", \"" + colorS +
-                                                 "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2872,9 +2613,6 @@ namespace UMol
                 }
 
                 command += "])";
-
-                UnityMolMain.recordPythonCommand(command);
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
 
@@ -2925,9 +2663,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("resetColorSelection(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -2987,11 +2722,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorAtomType(\"" + selName + "\", \"" + repType + "\", \"" +
-                                                 atomType + "\", "
-                                                 + String.Format(CultureInfo.InvariantCulture, "{0})", col));
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3030,9 +2760,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByChain(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             // /// <summary>
@@ -3107,9 +2834,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByResidue(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3147,9 +2871,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByAtom(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3187,9 +2908,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByHydrophobicity(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3227,9 +2945,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorBySequence(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3285,13 +3000,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByCharge(\"" + selName + "\", " +
-                                                 cBoolToPy(normalizeDensity) + ", " +
-                                                 minDens.ToString("F3", culture) + ", " +
-                                                 maxDens.ToString("F3", culture) + ")");
-
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3330,9 +3038,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByResidueType(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3370,9 +3075,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByResidueCharge(\"" + selName + "\", \"" + type + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3410,11 +3112,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("colorByBfactor(\"" + selName + "\", \"" + type + "\", " +
-                                                 String.Format(CultureInfo.InvariantCulture, " {0}, {1})", startColor,
-                                                     endColor));
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3454,10 +3151,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand(
-                    "setLineSize(\"" + selName + "\", " + val.ToString("F3", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             public static void setTraceSize(string selName, float val)
@@ -3489,10 +3182,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setTraceSize(\"" + selName + "\", " + val.ToString("F3", culture) +
-                                                 ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
 
@@ -3520,40 +3209,8 @@ namespace UMol
                     Debug.LogWarning("No molecule loaded name '" + structureName + "'");
                     return;
                 }
-
-                var foundObjects = FindObjectsOfType<ManipulationManager>();
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm != null )
-                {
-                    mm.centerOnStructure(s, lerp);
-                }
-
-                if ( recordCommand )
-                {
-                    UnityMolMain.recordPythonCommand("centerOnStructure(\"" + structureName + "\", " + cBoolToPy(lerp) +
-                                                     ")");
-                    UnityMolMain.recordUndoPythonCommand("");
-                }
             }
-
-            public static ManipulationManager getManipulationManager()
-            {
-                var foundObjects = FindObjectsOfType<ManipulationManager>();
-                ManipulationManager mm = null;
-
-                if ( foundObjects.Length > 0 )
-                {
-                    mm = foundObjects[0].GetComponent<ManipulationManager>();
-                }
-                else
-                {
-                    mm = UnityMolMain.getRepresentationParent().AddComponent<ManipulationManager>();
-                }
-
-                return mm;
-            }
-
+            
             /// <summary>
             /// Offsets all representations to center the selection 'selName'
             /// </summary>
@@ -3568,15 +3225,12 @@ namespace UMol
 
                 UnityMolSelection sel = selM.selections[selName];
 
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm != null )
-                {
-                    mm.centerOnSelection(sel, lerp);
-                }
-
-                UnityMolMain.recordPythonCommand("centerOnSelection(\"" + selName + "\", " + cBoolToPy(lerp) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
+                // ManipulationManager mm = getManipulationManager();
+                //
+                // if ( mm != null )
+                // {
+                //     mm.centerOnSelection(sel, lerp);
+                // }
             }
 
             /// <summary>
@@ -3602,9 +3256,6 @@ namespace UMol
                 UnityMolSelection selMob = selM.selections[selNameMobile];
 
                 CEAlignWrapper.alignWithCEAlign(selTar, selMob);
-
-                UnityMolMain.recordPythonCommand("cealign(\"" + selNameTarget + "\", \"" + selNameMobile + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
 
@@ -3625,7 +3276,6 @@ namespace UMol
                 if ( sm.loadedStructures.Count == 0 )
                 {
                     Debug.LogWarning("No molecule loaded");
-                    UnityMolMain.recordUndoPythonCommand("");
                     return null;
                 }
 
@@ -3682,14 +3332,6 @@ namespace UMol
                     {
                         selM.SetCurrentSelection(result);
                     }
-
-                    // Debug.LogWarning("Adding to existing selection: " + result);
-                    UnityMolMain.recordPythonCommand("select(\"" + selMDA + "\", \"" + name + "\", " +
-                                                     cBoolToPy(createSelection) + ", " + cBoolToPy(addToExisting) +
-                                                     ", " + cBoolToPy(silent) + ", " +
-                                                     cBoolToPy(setAsCurrentSelection) + ", " + cBoolToPy(forceCreate) +
-                                                     ", " + cBoolToPy(allModels) + ")");
-                    UnityMolMain.recordUndoPythonCommand("");
                     return result;
                 }
 
@@ -3701,15 +3343,6 @@ namespace UMol
 
                 if ( addToSelectionKeyword )
                     selM.AddSelectionKeyword(name, name);
-
-                UnityMolMain.recordPythonCommand("select(\"" + selMDA + "\", \"" + name + "\", " +
-                                                 cBoolToPy(createSelection) + ", " + cBoolToPy(addToExisting) + ", " +
-                                                 cBoolToPy(silent) + ", " +
-                                                 cBoolToPy(setAsCurrentSelection) + ", " + cBoolToPy(forceCreate) +
-                                                 ", " + cBoolToPy(allModels) + ", " +
-                                                 cBoolToPy(addToSelectionKeyword) + ")");
-
-                UnityMolMain.recordUndoPythonCommand("deleteSelection(\"" + result.name + "\")");
                 if ( !silent )
                 {
                     Debug.Log(result);
@@ -3726,9 +3359,6 @@ namespace UMol
             {
                 UnityMolSelectionManager selM = UnityMolMain.getSelectionManager();
                 selM.AddSelectionKeyword(keyword, selName);
-                UnityMolMain.recordPythonCommand("addSelectionKeyword(\"" + keyword + "\", \"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("removeSelectionKeyword(\"" + keyword + "\", \"" + selName +
-                                                     "\")");
             }
 
             /// <summary>
@@ -3738,8 +3368,6 @@ namespace UMol
             {
                 UnityMolSelectionManager selM = UnityMolMain.getSelectionManager();
                 selM.RemoveSelectionKeyword(keyword);
-                UnityMolMain.recordPythonCommand("removeSelectionKeyword(\"" + keyword + "\", \"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("addSelectionKeyword(\"" + keyword + "\", \"" + selName + "\")");
             }
 
             /// <summary>
@@ -3756,9 +3384,6 @@ namespace UMol
 
                 UnityMolSelection sel = selM.selections[selName];
                 selM.SetCurrentSelection(sel);
-
-                UnityMolMain.recordPythonCommand("setCurrentSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
 
@@ -3821,10 +3446,6 @@ namespace UMol
                 hM.Clean();
                 hM.HighlightAtoms(sumSel);
 #endif
-
-                UnityMolMain.recordPythonCommand("addToSelection(\"" + selMDA + "\", \"" + name + "\", " +
-                                                 cBoolToPy(silent) + ", " + cBoolToPy(allModels) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
 
                 if ( !silent )
                 {
@@ -3896,9 +3517,6 @@ namespace UMol
                 hM.HighlightAtoms(selM.selections[name]);
 #endif
 
-                UnityMolMain.recordPythonCommand("removeFromSelection(\"" + selMDA + "\", \"" + name + "\", " +
-                                                 cBoolToPy(silent) + ", " + cBoolToPy(allModels) + ")");
-                UnityMolMain.recordUndoPythonCommand("");
 
                 if ( !silent )
                 {
@@ -3921,9 +3539,6 @@ namespace UMol
 
                 selM.Delete(selName);
                 selM.RemoveSelectionKeyword(selName);
-
-                UnityMolMain.recordPythonCommand("deleteSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -3948,9 +3563,6 @@ namespace UMol
 
                 selM.Add(newSel);
                 selM.AddSelectionKeyword(newSelName, newSelName);
-
-                UnityMolMain.recordPythonCommand("duplicateSelection(\"" + selName + "\")");
-                UnityMolMain.recordUndoPythonCommand("deleteSelection(\"" + newSelName + "\")");
                 return newSelName;
             }
 
@@ -3990,9 +3602,6 @@ namespace UMol
 
                 selM.RemoveSelectionKeyword(oldSelName);
                 selM.AddSelectionKeyword(newSelName, newSelName);
-
-                UnityMolMain.recordPythonCommand("renameSelection(\"" + oldSelName + "\", \"" + newSelName + "\")");
-                UnityMolMain.recordUndoPythonCommand("renameSelection(\"" + newSelName + "\", \"" + oldSelName + "\")");
 
                 return true;
             }
@@ -4120,16 +3729,6 @@ namespace UMol
                     return false;
 #endif
                 }
-
-                if ( recordCommand )
-                {
-                    UnityMolMain.recordPythonCommand("updateSelectionWithMDA(\"" + selName + "\", \"" +
-                                                     selectionString + "\", "
-                                                     + cBoolToPy(forceAlteration) + ", " + cBoolToPy(silent) + ", " +
-                                                     cBoolToPy(allModels) + ")");
-                    UnityMolMain.recordUndoPythonCommand("");
-                }
-
                 return true;
             }
 
@@ -4138,8 +3737,6 @@ namespace UMol
                 UnityMolHighlightManager hM = UnityMolMain.getHighlightManager();
 
                 hM.Clean();
-                UnityMolMain.recordPythonCommand("cleanHighlight()");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -4176,12 +3773,6 @@ namespace UMol
                 //Should I record the selection
                 selM.SetCurrentSelection(result);
                 Debug.Log(result);
-
-                UnityMolMain.recordPythonCommand(String.Format(CultureInfo.InvariantCulture,
-                    "selectInSphere(Vector3({0}, {1}, {2}), {3})",
-                    position.x, position.y, position.z, radius));
-
-                UnityMolMain.recordUndoPythonCommand("deleteSelection(\"" + result.name + "\")");
 
                 return result;
             }
@@ -4239,9 +3830,6 @@ namespace UMol
             {
                 UnityMolSelectionManager selM = UnityMolMain.getSelectionManager();
                 selM.ClearCurrentSelection();
-
-                UnityMolMain.recordPythonCommand("clearSelections()");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -4272,9 +3860,6 @@ namespace UMol
                 }
 
                 selM.selections[selName].updateWithTraj = v;
-                UnityMolMain.recordPythonCommand("setUpdateSelectionTraj(\"" + selName + "\", " + cBoolToPy(v) + ")");
-                UnityMolMain.recordUndoPythonCommand("setUpdateSelectionTraj(\"" + selName + "\", " + cBoolToPy(!v) +
-                                                     ")");
             }
 
             /// <summary>
@@ -4314,10 +3899,6 @@ namespace UMol
                     Debug.LogWarning("No selection named '" + selName + "'");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setShadows(\"" + selName + "\", \"" + type + "\", " + enable + ")");
-                UnityMolMain.recordUndoPythonCommand("setShadows(\"" + selName + "\", \"" + type + "\", " + !enable +
-                                                     ")");
             }
 
             /// <summary>
@@ -4342,9 +3923,6 @@ namespace UMol
                     Debug.LogError("Couldn't enable DOF");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("enableDOF()");
-                UnityMolMain.recordUndoPythonCommand("disableDOF()");
             }
 
             /// <summary>
@@ -4369,9 +3947,6 @@ namespace UMol
                     Debug.LogError("Couldn't disable DOF");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("disableDOF()");
-                UnityMolMain.recordUndoPythonCommand("enableDOF()");
             }
 
             /// <summary>
@@ -4392,9 +3967,6 @@ namespace UMol
                     Debug.LogError("Couldn't set DOF aperture");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setDOFAperture(" + a.ToString("f3") + ")");
-                UnityMolMain.recordUndoPythonCommand("setDOFAperture(" + prev.ToString("f3") + ")");
             }
 
             /// <summary>
@@ -4415,9 +3987,6 @@ namespace UMol
                     Debug.LogError("Couldn't set DOF focal length");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("setDOFFocalLength(" + f.ToString("f3") + ")");
-                UnityMolMain.recordUndoPythonCommand("setDOFFocalLength(" + prev.ToString("f3") + ")");
             }
 
             /// <summary>
@@ -4440,9 +4009,6 @@ namespace UMol
                     Debug.LogError("Couldn't enable Outline effect");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("enableOutline()");
-                UnityMolMain.recordUndoPythonCommand("disableOutline()");
             }
 
             /// <summary>
@@ -4465,9 +4031,6 @@ namespace UMol
                     Debug.LogError("Couldn't disable Outline effect");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("disableOutline()");
-                UnityMolMain.recordUndoPythonCommand("enableOutline()");
             }
 
 
@@ -4508,45 +4071,7 @@ namespace UMol
                 RecordManager.stopRecordingVideo();
             }
 
-            // --------------- Python history functions
-            /// <summary>
-            /// Play the opposite function of the lastly called APIPython function recorded in UnityMolMain.pythonUndoCommands
-            /// </summary>
-            public static void undo()
-            {
-                if ( UnityMolMain.pythonUndoCommands.Count == 0 )
-                {
-                    return;
-                }
-
-                string lastUndoCommand = UnityMolMain.pythonUndoCommands.Last();
-
-                if ( lastUndoCommand != null )
-                {
-                    Debug.Log("Undo command = " + lastUndoCommand);
-                    pythonConsole.ExecuteCommand(lastUndoCommand);
-
-                    UnityMolMain.pythonUndoCommands.RemoveAt(UnityMolMain.pythonUndoCommands.Count - 1);
-                    UnityMolMain.pythonCommands.RemoveAt(UnityMolMain.pythonCommands.Count - 1);
-
-
-                    //Remove the 2 last commands, the undo + the previous command
-
-                    if ( lastUndoCommand != "" )
-                    {
-                        UnityMolMain.pythonCommands.RemoveAt(UnityMolMain.pythonCommands.Count - 1);
-                        UnityMolMain.pythonUndoCommands.RemoveAt(UnityMolMain.pythonUndoCommands.Count - 1);
-
-                        int count = lastUndoCommand.Split('\n').Length - 1;
-                        for (int i = 0; i < count; i++)
-                        {
-                            UnityMolMain.pythonCommands.RemoveAt(UnityMolMain.pythonCommands.Count - 1);
-                            UnityMolMain.pythonUndoCommands.RemoveAt(UnityMolMain.pythonUndoCommands.Count - 1);
-                        }
-                    }
-                }
-            }
-
+           
             /// <summary>
             /// Set the local position and rotation (euler angles) of the given structure
             /// </summary>
@@ -4572,20 +4097,6 @@ namespace UMol
                     return;
                 }
 
-                UnityMolMain.recordPythonCommand("setStructurePositionRotation( \"" + structureName + "\", Vector3(" +
-                                                 pos.x.ToString("F4", culture) + ", " +
-                                                 pos.y.ToString("F4", culture) + ", " + pos.z.ToString("F4", culture) +
-                                                 "), " +
-                                                 "Vector3(" + rot.x.ToString("F4", culture) + ", " +
-                                                 rot.y.ToString("F4", culture) + ", " + rot.z.ToString("F4", culture) +
-                                                 "))");
-                UnityMolMain.recordUndoPythonCommand("setStructurePositionRotation( \"" + structureName +
-                                                     "\", Vector3(" + savePos.x.ToString("F4", culture) + ", " +
-                                                     savePos.y.ToString("F4", culture) + ", " +
-                                                     savePos.z.ToString("F4", culture) + "), " +
-                                                     "Vector3(" + saveRot.x.ToString("F4", culture) + ", " +
-                                                     saveRot.y.ToString("F4", culture) + ", " +
-                                                     saveRot.z.ToString("F4", culture) + "))");
             }
 
             public static void getStructurePositionRotation(string structureName, ref Vector3 pos, ref Vector3 rot)
@@ -4612,33 +4123,13 @@ namespace UMol
             /// </summary>
             public static void saveHistoryScript(string path)
             {
-                string scriptContent = UnityMolMain.commandHistory();
-
-                //Set center to false in fetch and load commands => this is handled by the loadedMolParentToString function
-                string[] commands = scriptContent.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < commands.Length; i++)
-                {
-                    string c = commands[i];
-                    if ( c.StartsWith("fetch(") || c.StartsWith("load(") )
-                    {
-                        commands[i] = commands[i].Replace(", center=True", ", center=False");
-                        commands[i] = commands[i].Replace(", center= True", ", center= False");
-                    }
-                }
-
-                scriptContent = string.Join("\n", commands);
-
-                scriptContent += loadedMolParentToString();
-
-                File.WriteAllText(path, scriptContent);
-
-                Debug.Log("Saved history script to '" + path + "'");
+                
             }
 
 
             static string loadedMolParentToString()
             {
-                ManipulationManager mm = getManipulationManager();
+                // ManipulationManager mm = getManipulationManager();
                 UnityMolStructureManager sm = UnityMolMain.getStructureManager();
 
                 string res = "";
@@ -4666,20 +4157,21 @@ namespace UMol
                        parentT.eulerAngles.x.ToString("F4", culture) + ", " +
                        parentT.eulerAngles.y.ToString("F4", culture) + ", " +
                        parentT.eulerAngles.z.ToString("F4", culture) + "), Vector3(" +
-                       mm.currentCenterPosition.x.ToString("F4", culture) + ", " +
-                       mm.currentCenterPosition.y.ToString("F4", culture) + ", " +
-                       mm.currentCenterPosition.z.ToString("F4", culture) + ") )\n";
+                       // mm.currentCenterPosition.x.ToString("F4", culture) + ", " +
+                       // mm.currentCenterPosition.y.ToString("F4", culture) + ", " +
+                       // mm.currentCenterPosition.z.ToString("F4", culture) + 
+                       ") )\n";
 
                 return res;
             }
 
             public static void setRotationCenter(Vector3 newPos)
             {
-                ManipulationManager mm = getManipulationManager();
-                if ( mm != null )
-                {
-                    mm.setRotationCenter(newPos);
-                }
+                // ManipulationManager mm = getManipulationManager();
+                // if ( mm != null )
+                // {
+                //     mm.setRotationCenter(newPos);
+                // }
             }
 
             /// <summary>
@@ -4706,7 +4198,7 @@ namespace UMol
 
                     try
                     {
-                        pythonConsole.ExecuteCommand(comm);
+                        // pythonConsole.ExecuteCommand(comm);
                     }
                     catch (System.Exception e)
                     {
@@ -4864,9 +4356,6 @@ namespace UMol
                     Debug.LogError("Wrong structure name");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("addHydrogensReduce(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -4888,9 +4377,6 @@ namespace UMol
                     Debug.LogError("Wrong structure name");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("addHydrogensHaad(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             /// <summary>
@@ -4918,14 +4404,6 @@ namespace UMol
                     Debug.LogError("No selection named " + selName);
                     return;
                 }
-
-                //Record command before calling another APIPython function
-                UnityMolMain.recordPythonCommand("setAsLigand(\"" + selName + "\", " + cBoolToPy(isLig) + ", " +
-                                                 cBoolToPy(updateAllSelections) + ")");
-
-                //Caution
-                UnityMolMain.recordUndoPythonCommand(
-                    "setAsLigand(\"" + selName + "\", " + cBoolToPy(!isLig) + ", True)");
 
                 if ( updateAllSelections )
                 {
@@ -4959,9 +4437,6 @@ namespace UMol
                 if ( s != null && toMerge != null )
                 {
                     s.MergeStructure(toMerge, chainName);
-                    UnityMolMain.recordPythonCommand("mergeStructure(\"" + structureName + "\", \"" + structureName2 +
-                                                     "\", \"" + chainName + "\")");
-                    UnityMolMain.recordUndoPythonCommand("");
                 }
             }
 
@@ -5051,10 +4526,6 @@ namespace UMol
                     Debug.LogError("Could not connect to the simulation on " + adress + " : " + port + "\n " + e);
                     return false;
                 }
-
-                UnityMolMain.recordPythonCommand("connectIMD(\"" + structureName + "\", \"" + adress + "\", " + port +
-                                                 ")");
-                UnityMolMain.recordUndoPythonCommand("disconnectIMD(\"" + structureName + "\")");
                 return res;
             }
 
@@ -5073,9 +4544,6 @@ namespace UMol
 
                 UnityMolStructure s = sm.GetStructure(structureName);
                 s.disconnectIMD();
-
-                UnityMolMain.recordPythonCommand("disconnectIMD(\"" + structureName + "\")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
 
@@ -5191,8 +4659,6 @@ namespace UMol
                 float prevVal = Camera.main.nearClipPlane;
                 newV = Mathf.Clamp(newV, 0.001f, 100.0f);
                 Camera.main.nearClipPlane = newV;
-                UnityMolMain.recordPythonCommand("setCameraNearPlane(" + newV.ToString("F4", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setCameraNearPlane(" + prevVal.ToString("F4", culture) + ")");
             }
 
             public static void setCameraFarPlane(float newV)
@@ -5200,8 +4666,6 @@ namespace UMol
                 float prevVal = Camera.main.farClipPlane;
                 newV = Mathf.Clamp(newV, 0.1f, 5000.0f);
                 Camera.main.farClipPlane = newV;
-                UnityMolMain.recordPythonCommand("setCameraFarPlane(" + newV.ToString("F4", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setCameraFarPlane(" + prevVal.ToString("F4", culture) + ")");
             }
 
 
@@ -5233,9 +4697,6 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("enableDepthCueing()");
-                UnityMolMain.recordUndoPythonCommand("disableDepthCueing()");
             }
 
             public static void disableDepthCueing()
@@ -5266,9 +4727,6 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("disableDepthCueing()");
-                UnityMolMain.recordUndoPythonCommand("enableDepthCueing()");
             }
 
             public static void setDepthCueingStart(float v)
@@ -5301,10 +4759,6 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("setDepthCueingStart(" +
-                                                 UnityMolMain.fogStart.ToString("F2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setDepthCueingStart(" + prev.ToString("F2", culture) + ")");
             }
 
             public static void setDepthCueingDensity(float v)
@@ -5337,20 +4791,12 @@ namespace UMol
                         }
                     }
                 }
-
-                UnityMolMain.recordPythonCommand("setDepthCueingDensity(" +
-                                                 UnityMolMain.fogDensity.ToString("F2", culture) + ")");
-                UnityMolMain.recordUndoPythonCommand("setDepthCueingDensity(" + prev.ToString("F2", culture) + ")");
             }
 
             public static void setDepthCueingColor(Color col)
             {
                 RenderSettings.fogColor = col;
 
-                UnityMolMain.recordPythonCommand("setDepthCueingColor(" +
-                                                 String.Format(CultureInfo.InvariantCulture, "{0})", col));
-                UnityMolMain.recordUndoPythonCommand("setDepthCueingColor(" +
-                                                     String.Format(CultureInfo.InvariantCulture, "{0})", col));
             }
 
 
@@ -5412,10 +4858,6 @@ namespace UMol
                 Color colprev = Camera.main.backgroundColor;
                 Camera.main.backgroundColor = col;
                 setDepthCueingColor(Camera.main.backgroundColor);
-                UnityMolMain.recordPythonCommand("bg_color(" +
-                                                 String.Format(CultureInfo.InvariantCulture, "{0})", col));
-                UnityMolMain.recordUndoPythonCommand("bg_color(" +
-                                                     String.Format(CultureInfo.InvariantCulture, "{0})", colprev));
             }
 
             /// <summary>
@@ -5426,10 +4868,6 @@ namespace UMol
                 Color colprev = Camera.main.backgroundColor;
                 Camera.main.backgroundColor = col;
                 setDepthCueingColor(Camera.main.backgroundColor);
-                UnityMolMain.recordPythonCommand("bg_color(" +
-                                                 String.Format(CultureInfo.InvariantCulture, "{0})", col));
-                UnityMolMain.recordUndoPythonCommand("bg_color(" +
-                                                     String.Format(CultureInfo.InvariantCulture, "{0})", colprev));
             }
 
             /// <summary>
@@ -5469,24 +4907,24 @@ namespace UMol
             /// </summary>
             public static void switchRotateAxisX()
             {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                if ( mm.rotateX )
-                {
-                    mm.rotateX = false;
-                }
-                else
-                {
-                    mm.rotateX = true;
-                }
-
-                UnityMolMain.recordPythonCommand("switchRotateAxisX()");
-                UnityMolMain.recordUndoPythonCommand("switchRotateAxisX()");
+                // ManipulationManager mm = getManipulationManager();
+                //
+                // if ( mm == null )
+                // {
+                //     return;
+                // }
+                //
+                // if ( mm.rotateX )
+                // {
+                //     mm.rotateX = false;
+                // }
+                // else
+                // {
+                //     mm.rotateX = true;
+                // }
+                //
+                // UnityMolMain.recordPythonCommand("switchRotateAxisX()");
+                // UnityMolMain.recordUndoPythonCommand("switchRotateAxisX()");
             }
 
             /// <summary>
@@ -5494,24 +4932,24 @@ namespace UMol
             /// </summary>
             public static void switchRotateAxisY()
             {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                if ( mm.rotateY )
-                {
-                    mm.rotateY = false;
-                }
-                else
-                {
-                    mm.rotateY = true;
-                }
-
-                UnityMolMain.recordPythonCommand("switchRotateAxisY()");
-                UnityMolMain.recordUndoPythonCommand("switchRotateAxisY()");
+                // ManipulationManager mm = getManipulationManager();
+                //
+                // if ( mm == null )
+                // {
+                //     return;
+                // }
+                //
+                // if ( mm.rotateY )
+                // {
+                //     mm.rotateY = false;
+                // }
+                // else
+                // {
+                //     mm.rotateY = true;
+                // }
+                //
+                // UnityMolMain.recordPythonCommand("switchRotateAxisY()");
+                // UnityMolMain.recordUndoPythonCommand("switchRotateAxisY()");
             }
 
             /// <summary>
@@ -5519,136 +4957,27 @@ namespace UMol
             /// </summary>
             public static void switchRotateAxisZ()
             {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                if ( mm.rotateZ )
-                {
-                    mm.rotateZ = false;
-                }
-                else
-                {
-                    mm.rotateZ = true;
-                }
-
-                UnityMolMain.recordPythonCommand("switchRotateAxisZ()");
-                UnityMolMain.recordUndoPythonCommand("switchRotateAxisZ()");
+                // ManipulationManager mm = getManipulationManager();
+                //
+                // if ( mm == null )
+                // {
+                //     return;
+                // }
+                //
+                // if ( mm.rotateZ )
+                // {
+                //     mm.rotateZ = false;
+                // }
+                // else
+                // {
+                //     mm.rotateZ = true;
+                // }
+                //
+                // UnityMolMain.recordPythonCommand("switchRotateAxisZ()");
+                // UnityMolMain.recordUndoPythonCommand("switchRotateAxisZ()");
             }
 
-            /// <summary>
-            /// Change the rotation speed around the X axis
-            /// </summary>
-            public static void changeRotationSpeedX(float val)
-            {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                mm.speedX = val;
-            }
-
-            /// <summary>
-            /// Change the rotation speed around the Y axis
-            /// </summary>
-            public static void changeRotationSpeedY(float val)
-            {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                mm.speedY = val;
-            }
-
-            /// <summary>
-            /// Change the rotation speed around the Z axis
-            /// </summary>
-            public static void changeRotationSpeedZ(float val)
-            {
-                ManipulationManager mm = getManipulationManager();
-
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                mm.speedZ = val;
-            }
-
-            /// <summary>
-            /// Change the mouse scroll speed
-            /// </summary>
-            public static void setMouseScrollSpeed(float val)
-            {
-                if ( val > 0.0f )
-                {
-                    ManipulationManager mm = getManipulationManager();
-
-                    if ( mm == null )
-                    {
-                        return;
-                    }
-
-                    mm.scrollSpeed = val;
-                }
-                else
-                {
-                    Debug.LogError("Wrong speed value");
-                }
-            }
-
-            /// <summary>
-            /// Change the speed of mouse rotations and translations
-            /// </summary>
-            public static void setMouseMoveSpeed(float val)
-            {
-                if ( val > 0.0f )
-                {
-                    ManipulationManager mm = getManipulationManager();
-
-                    if ( mm == null )
-                    {
-                        return;
-                    }
-
-                    mm.moveSpeed = val;
-                }
-                else
-                {
-                    Debug.LogError("Wrong speed value");
-                }
-            }
-
-
-            /// <summary>
-            /// Stop rotation around all axis
-            /// </summary>
-            public static void stopRotations()
-            {
-                ManipulationManager mm = getManipulationManager();
-                if ( mm == null )
-                {
-                    return;
-                }
-
-                mm.rotateX = false;
-                mm.rotateY = false;
-                mm.rotateZ = false;
-
-                UnityMolMain.recordPythonCommand("stopRotations()");
-                UnityMolMain.recordUndoPythonCommand("stopRotations()");
-            }
-
-
+           
             /// <summary>
             /// Transform a string of representation type to a RepType object
             /// </summary>
@@ -5798,9 +5127,6 @@ namespace UMol
 
                 int prevVal = (int)UnityMolMain.measureMode;
                 UnityMolMain.measureMode = (MeasureMode)newMode;
-
-                UnityMolMain.recordPythonCommand("setMeasureMode(" + newMode + ")");
-                UnityMolMain.recordUndoPythonCommand("setMeasureMode(" + prevVal + ")");
             }
 
             public static void annotateAtom(string structureName, int atomId)
@@ -5824,9 +5150,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateAtom(\"" + structureName + "\", " + atomId + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationAtom(\"" + structureName + "\", " + atomId + ")");
             }
 
             public static void removeAnnotationAtom(string structureName, int atomId)
@@ -5852,9 +5175,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationAtom(\"" + structureName + "\", " + atomId + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateAtom(\"" + structureName + "\", " + atomId + ")");
             }
 
             public static void annotateAtomText(string structureName, int atomId, string text)
@@ -5878,11 +5198,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateAtomText(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 text + "\")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationAtomText(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + text + "\")");
             }
 
             public static void removeAnnotationAtomText(string structureName, int atomId, string text)
@@ -5909,11 +5224,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationAtomText(\"" + structureName + "\", " + atomId +
-                                                 ", \"" + text + "\")");
-                UnityMolMain.recordUndoPythonCommand("annotateAtomText(\"" + structureName + "\", " + atomId + ", \"" +
-                                                     text + "\")");
             }
 
             public static void annotateLine(string structureName, int atomId, string structureName2, int atomId2)
@@ -5940,11 +5250,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateLine(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationLine(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", " + atomId2 + ")");
             }
 
             public static void removeAnnotationLine(string structureName, int atomId, string structureName2,
@@ -5975,11 +5280,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationLine(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateLine(\"" + structureName + "\", " + atomId + ", \"" +
-                                                     structureName2 + "\", " + atomId2 + ")");
             }
 
 
@@ -6007,11 +5307,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateDistance(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationDistance(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", " + atomId2 + ")");
             }
 
             public static void removeAnnotationDistance(string structureName, int atomId, string structureName2,
@@ -6042,11 +5337,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationDistance(\"" + structureName + "\", " + atomId +
-                                                 ", \"" + structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateDistance(\"" + structureName + "\", " + atomId + ", \"" +
-                                                     structureName2 + "\", " + atomId2 + ")");
             }
 
             public static void annotateAngle(string structureName, int atomId, string structureName2, int atomId2,
@@ -6077,13 +5367,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateAngle(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationAngle(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
             }
 
             public static void removeAnnotationAngle(string structureName, int atomId, string structureName2,
@@ -6117,13 +5400,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationAngle(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateAngle(\"" + structureName + "\", " + atomId + ", \"" +
-                                                     structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
             }
 
 
@@ -6157,15 +5433,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateDihedralAngle(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ", \"" +
-                                                 structureName4 + "\", " + atomId4 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationDihedralAngle(\"" + structureName + "\", " +
-                                                     atomId + ", \"" + structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ", \"" +
-                                                     structureName4 + "\", " + atomId4 + ")");
             }
 
             public static void removeAnnotationDihedralAngle(string structureName, int atomId, string structureName2,
@@ -6202,15 +5469,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationDihedralAngle(\"" + structureName + "\", " + atomId +
-                                                 ", \"" + structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ", \"" +
-                                                 structureName4 + "\", " + atomId4 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateDihedralAngle(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ", \"" +
-                                                     structureName4 + "\", " + atomId4 + ")");
             }
 
 
@@ -6239,11 +5497,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateRotatingArrow(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationRotatingArrow(\"" + structureName + "\", " +
-                                                     atomId + ", \"" + structureName2 + "\", " + atomId2 + ")");
             }
 
             public static void removeAnnotationRotatingArrow(string structureName, int atomId, string structureName2,
@@ -6274,11 +5527,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationRotatingArrow(\"" + structureName + "\", " + atomId +
-                                                 ", \"" + structureName2 + "\", " + atomId2 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateRotatingArrow(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", " + atomId2 + ")");
             }
 
 
@@ -6310,13 +5558,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("annotateArcLine(\"" + structureName + "\", " + atomId + ", \"" +
-                                                 structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
-                UnityMolMain.recordUndoPythonCommand("removeAnnotationArcLine(\"" + structureName + "\", " + atomId +
-                                                     ", \"" + structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
             }
 
             public static void removeAnnotationArcLine(string structureName, int atomId, string structureName2,
@@ -6350,13 +5591,6 @@ namespace UMol
                     Debug.LogError("Wrong atom id");
                     return;
                 }
-
-                UnityMolMain.recordPythonCommand("removeAnnotationArcLine(\"" + structureName + "\", " + atomId +
-                                                 ", \"" + structureName2 + "\", "
-                                                 + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
-                UnityMolMain.recordUndoPythonCommand("annotateArcLine(\"" + structureName + "\", " + atomId + ", \"" +
-                                                     structureName2 + "\", "
-                                                     + atomId2 + ", \"" + structureName3 + "\", " + atomId3 + ")");
             }
 
             public static void annotateDrawLine(string structureName, List<Vector3> line, Color col)
@@ -6382,22 +5616,6 @@ namespace UMol
                     Debug.LogError("Wrong structure name");
                     return;
                 }
-
-                string command = "annotateDrawLine(\"" + structureName + "\",  List[Vector3]([";
-                for (int i = 0; i < line.Count; i++)
-                {
-                    command += "Vector3(" + line[i].x.ToString("F3", culture) + ", " +
-                               line[i].y.ToString("F3", culture) + ", " +
-                               line[i].z.ToString("F3", culture) + ")";
-                    if ( i != line.Count - 1 )
-                    {
-                        command += ", ";
-                    }
-                }
-
-                command += String.Format(CultureInfo.InvariantCulture, "]), {0}, )", col);
-                UnityMolMain.recordPythonCommand(command);
-                UnityMolMain.recordUndoPythonCommand("removeLastDrawLine(\"" + structureName + "\", " + id + ")");
             }
 
             public static void removeLastDrawLine(string structureName, int id)
@@ -6426,24 +5644,17 @@ namespace UMol
                     return;
                 }
 
-
-                UnityMolMain.recordPythonCommand("removeLastDrawLine(\"" + structureName + "\", " + id + ")");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             public static void clearDrawings()
             {
                 UnityMolAnnotationManager am = UnityMolMain.getAnnotationManager();
                 am.CleanDrawings();
-                UnityMolMain.recordPythonCommand("clearDrawings()");
-                UnityMolMain.recordUndoPythonCommand("");
             }
 
             public static void clearAnnotations()
             {
                 UnityMolMain.getAnnotationManager().Clean();
-                UnityMolMain.recordPythonCommand("clearAnnotations()");
-                UnityMolMain.recordUndoPythonCommand("");
             }
         }
     }

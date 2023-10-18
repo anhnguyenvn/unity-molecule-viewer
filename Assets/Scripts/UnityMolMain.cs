@@ -164,46 +164,6 @@ namespace UMol
 
             return annotationManager;
         }
-
-        public static void recordPythonCommand(string command)
-        {
-            if ( onNewCommand != null )
-            {
-                onNewCommand(new CommandEventArgs(command));
-            }
-
-            pythonCommands.Add(command);
-            addCommandToUserPref(command);
-        }
-
-        public static void recordUndoPythonCommand(string command)
-        {
-            pythonUndoCommands.Add(command);
-        }
-
-        static void addCommandToUserPref(string command)
-        {
-            NPrevCommands.Add(command);
-
-            int Ncomm = Mathf.Min(NRestoreCommands, NPrevCommands.Count);
-            PlayerPrefs.SetInt("NRestoreCommands", Ncomm);
-            for (int i = 0; i < Ncomm; i++)
-            {
-                PlayerPrefs.SetString("lastcommand" + i, NPrevCommands[i]);
-            }
-        }
-
-        public static string commandHistory()
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (string s in pythonCommands)
-            {
-                sb.Append(s);
-                sb.Append("\n");
-            }
-
-            return sb.ToString();
-        }
     }
 
     public class CommandEventArgs : System.EventArgs

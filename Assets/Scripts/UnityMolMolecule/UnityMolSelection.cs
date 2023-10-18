@@ -131,7 +131,7 @@ namespace UMol
 
         public Vector3 centerOfGravity
         {
-            get { return ManipulationManager.computeCenterOfGravitySel(this); }
+            get { return Vector3.zero; }
         }
 
         public int Count

@@ -165,7 +165,7 @@ public class UIManager : MonoBehaviour {
 
 
 	public void undo() {
-		APIPython.undo();
+		
 	}
 
 	public void saveStateAsPythonScript() {

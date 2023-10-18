@@ -91,7 +91,9 @@ namespace UMol
 
 
         public static MeshData createChainMesh(List<UnityMolResidue> residues,
-            ref Dictionary<UnityMolResidue, List<int>> residueToVert, bool isTraj = false)
+            ref Dictionary<UnityMolResidue, List<int>> residueToVert,
+            ref List<MeshData> segmentsMeshData, // anhnguyen: add this one to get the segment data out
+            bool isTraj = false)
         {
             if ( useFastMethod )
             {
@@ -102,6 +104,13 @@ namespace UMol
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
             List<Color32> colors = new List<Color32>();
+
+            //anhnguyen handle for segments
+            
+            List<Vector3> segmentVertices = new List<Vector3>();
+            List<int> segmentTriangles = new List<int>();
+            List<Color32> segmentColors = new List<Color32>();
+            Dictionary<UnityMolResidue, List<int>> dummyResidueToVert = new Dictionary<UnityMolResidue, List<int>>();
 
 
             int nbPlane = 0;
@@ -157,12 +166,17 @@ namespace UMol
             }
 
             Dictionary<Vector3, int> verticesDict = new Dictionary<Vector3, int>();
+            
+            Dictionary<Vector3, int> dmmyVerticesDict = new Dictionary<Vector3, int>();
+            
             int n = nbPlane - 3;
 
             PeptidePlane pp1 = null;
             PeptidePlane pp2 = null;
             PeptidePlane pp3 = null;
             PeptidePlane pp4 = null;
+
+            List<MeshData> meshDataList = new List<MeshData>();
 
             for (int i = 0; i < n; i++)
             {
@@ -200,8 +214,31 @@ namespace UMol
                     }
                 }
 
+                // vertices.Clear();
+                // triangles.Clear();
+                // colors.Clear();
+                // verticesDict.Clear();
                 createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref vertices, ref triangles,
                     ref colors, ref residueToVert, ref verticesDict, isTraj);
+
+                if ( segmentsMeshData != null ) // anhnguyen: add this one to get the segment data out
+                {
+                    segmentVertices.Clear();
+                    segmentTriangles.Clear();
+                 
+                    createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref segmentVertices, ref segmentTriangles,
+                        ref segmentColors,
+                        ref dummyResidueToVert, // anhnguyen dummy
+                        ref dmmyVerticesDict,  // anhnguyen dummy
+                        isTraj);
+                    
+                    segmentsMeshData.Add(new MeshData()
+                    {
+                        triangles = segmentTriangles.ToArray(),
+                        vertices = segmentVertices.ToArray(),
+                    });
+                }
+                
             }
 
             MeshData mesh = new MeshData();
@@ -495,13 +532,15 @@ namespace UMol
             c1 = col1;
             c2 = col2;
         }
+        
+        // static GameObject RootProtein
 
 
         static void createSegmentMesh(int i, int n, PeptidePlane pp1, PeptidePlane pp2, PeptidePlane pp3,
             PeptidePlane pp4,
             ref List<Vector3> verticesList, ref List<int> trianglesList, ref List<Color32> colorsList,
             ref Dictionary<UnityMolResidue, List<int>> residueToVert, ref Dictionary<Vector3, int> verticesDict,
-            bool isTraj)
+            bool isTraj) 
         {
             UnityMolResidue.secondaryStructureType type0 = pp2.r1.secondaryStructure;
             UnityMolResidue.secondaryStructureType type1 = 0;
@@ -623,20 +662,145 @@ namespace UMol
             AddVertToResidueDict(ref residueToVert, pp1.r3, listVertId);
             // }
             // catch {}
-
-            var newMesh = new GameObject($"mesh_{i}");
-            var rdrMesh = newMesh.AddComponent<MeshFilter>().mesh;
-            rdrMesh.vertices = verticesList.ToArray();
-            rdrMesh.triangles = trianglesList.ToArray();
-            rdrMesh.colors32 = colorsList.ToArray();
-            
-            newMesh.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Custom/SurfaceVertexColor"));;
-            
-            // MeshData mesh = new MeshData();
-            // mesh.triangles = triangles.ToArray();
-            // mesh.vertices = vertices.ToArray();
-            // mesh.colors = colors.ToArray();
         }
+        
+         static void createSegmentMeshV2(int i, int n, PeptidePlane pp1, PeptidePlane pp2, PeptidePlane pp3,
+            PeptidePlane pp4,
+            List<Vector3> verticesList, List<int> trianglesList, List<Color32> colorsList,
+            Dictionary<UnityMolResidue, List<int>> residueToVert, Dictionary<Vector3, int> verticesDict,
+            bool isTraj)
+        {
+            Debug.Log($"<color=yellow>i: {i} __  n: {n}</color>");
+            UnityMolResidue.secondaryStructureType type0 = pp2.r1.secondaryStructure;
+            UnityMolResidue.secondaryStructureType type1 = 0;
+            UnityMolResidue.secondaryStructureType type2 = 0;
+
+            pp2.Transition(ref type1, ref type2);
+
+            Color32 c1 = Color.black;
+            Color32 c2 = Color.black;
+            segmentColors(pp2, ref c1, ref c2);
+
+            Vector3[] profile1 = null;
+            Vector3[] profile2 = null;
+
+            int pdetail = profileDetail;
+            int ssteps = splineSteps;
+            if ( isTraj )
+            {
+                pdetail = trajProfileDetail;
+                ssteps = trajSplineSteps;
+                // testDistanceCA_CA = false;
+            }
+
+            segmentProfiles(pp2, pp3, pdetail, ref profile1, ref profile2);
+
+            int linearQuadOutcircOrIncirc = 0; //0 linear / 1 Quad / 2 Out Circ / 3 In Circ
+
+            if ( !(type1 == UnityMolResidue.secondaryStructureType.Strand &&
+                   type2 != UnityMolResidue.secondaryStructureType.Strand) )
+            {
+                linearQuadOutcircOrIncirc = 1;
+            }
+
+            if ( type0 == UnityMolResidue.secondaryStructureType.Strand &&
+                 type1 != UnityMolResidue.secondaryStructureType.Strand )
+            {
+                linearQuadOutcircOrIncirc = 2;
+            }
+
+            // if type1 != pdb.ResidueTypeStrand && type2 == pdb.ResidueTypeStrand {
+            // 	easeFunc = ease.InOutSquare
+            // }
+            if ( i == 0 )
+            {
+                profile1 = ellipseProfile(pdetail, 0.0f, 0.0f);
+                linearQuadOutcircOrIncirc = 2;
+            }
+            else if ( i == n - 1 )
+            {
+                profile2 = ellipseProfile(pdetail, 0.0f, 0.0f);
+                linearQuadOutcircOrIncirc = 3;
+            }
+
+            List<Vector3[]> splines1 = new List<Vector3[]>(profile1.Length);
+            List<Vector3[]> splines2 = new List<Vector3[]>(profile2.Length);
+
+            for (int a = 0; a < profile1.Length; a++)
+            {
+                Vector3 p1 = profile1[a];
+                Vector3 p2 = profile2[a];
+                splines1.Add(splineForPlanes(pp1, pp2, pp3, pp4, ssteps, p1.x, p1.y));
+                splines2.Add(splineForPlanes(pp1, pp2, pp3, pp4, ssteps, p2.x, p2.y));
+            }
+
+            int startV = Mathf.Max(verticesList.Count - 1, 0);
+
+            for (int a = 0; a < ssteps; a++)
+            {
+                float t0 = easeFunc(((float)a)/ssteps, linearQuadOutcircOrIncirc);
+                float t1 = easeFunc(((float)(a + 1))/ssteps, linearQuadOutcircOrIncirc);
+
+                if ( a == 0 && type1 == UnityMolResidue.secondaryStructureType.Strand
+                            && type2 != UnityMolResidue.secondaryStructureType.Strand )
+                {
+                    Vector3 p00 = splines1[0][a];
+                    Vector3 p10 = splines1[pdetail/4][a];
+                    Vector3 p11 = splines1[2*pdetail/4][a];
+                    Vector3 p01 = splines1[3*pdetail/4][a];
+                    triangulateQuad(p00, p01, p11, p10,
+                        c1, c1, c1, c1,
+                        ref verticesList, ref colorsList, ref trianglesList, ref verticesDict);
+                }
+
+                for (int j = 0; j < pdetail; j++)
+                {
+                    Vector3 p100 = splines1[j][a];
+                    Vector3 p101 = splines1[j][a + 1];
+                    Vector3 p110 = splines1[(j + 1)%pdetail][a];
+                    Vector3 p111 = splines1[(j + 1)%pdetail][a + 1];
+                    Vector3 p200 = splines2[j][a];
+                    Vector3 p201 = splines2[j][a + 1];
+                    Vector3 p210 = splines2[(j + 1)%pdetail][a];
+                    Vector3 p211 = splines2[(j + 1)%pdetail][a + 1];
+
+                    Vector3 p00 = Vector3.Lerp(p100, p200, t0);
+                    Vector3 p01 = Vector3.Lerp(p101, p201, t1);
+                    Vector3 p10 = Vector3.Lerp(p110, p210, t0);
+                    Vector3 p11 = Vector3.Lerp(p111, p211, t1);
+
+                    Color32 c00 = Color32.Lerp(c1, c2, t0);
+                    Color32 c01 = Color32.Lerp(c1, c2, t1);
+                    Color32 c10 = Color32.Lerp(c1, c2, t0);
+
+                    Color32 c11 = Color32.Lerp(c1, c2, t1);
+                    triangulateQuad(p10, p11, p01, p00,
+                        c10, c11, c01, c00,
+                        ref verticesList, ref colorsList, ref trianglesList, ref verticesDict);
+                }
+            }
+
+            List<int> listVertId = new List<int>();
+
+            for (int sV = startV; sV < verticesList.Count; sV++)
+            {
+                listVertId.Add(sV);
+            }
+
+  
+            AddVertToResidueDict(ref residueToVert, pp1.r3, listVertId);
+    
+
+            // var newMesh = new GameObject($"mesh_{i}");
+            // var rdrMesh = newMesh.AddComponent<MeshFilter>().mesh;
+            // rdrMesh.vertices = verticesList.ToArray();
+            // rdrMesh.triangles = trianglesList.ToArray();
+            // rdrMesh.colors32 = colorsList.ToArray();
+            //
+            // newMesh.AddComponent<MeshRenderer>().sharedMaterial =
+            //     new Material(Shader.Find("Custom/SurfaceVertexColor"));
+        }
+
 
         public static void AddVertToResidueDict(ref Dictionary<UnityMolResidue, List<int>> residueToVert,
             UnityMolResidue r, List<int> newVs)

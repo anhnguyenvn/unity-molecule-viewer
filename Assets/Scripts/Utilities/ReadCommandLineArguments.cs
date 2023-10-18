@@ -81,10 +81,7 @@ public class ReadCommandLineArguments : MonoBehaviour {
 	void Start() {
 		List<string> filePaths = GetArg("-i");
 		foreach (string p in filePaths) {
-			if(PythonUtils.IsPythonFile(p)){
-				APIPython.loadHistoryScript(p);
-			}
-			else if(p.Length == 4){
+			if(p.Length == 4){
 				APIPython.fetch(p);
 			}
 			else{

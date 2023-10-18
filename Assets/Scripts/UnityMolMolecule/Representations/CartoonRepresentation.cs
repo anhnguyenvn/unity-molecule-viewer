@@ -345,6 +345,8 @@ namespace UMol
                 string keyPrecomputedRep = r.chain.model.structure.uniqueName + "_" + r.chain.model.name + "_" +
                                            r.chain.name + "_Cartoon";
 
+                List<MeshData> segmentsMeshData = new List<MeshData>();
+
                 if ( UnityMolMain.getPrecompRepManager().ContainsRep(keyPrecomputedRep) )
                 {
                     mesh = UnityMolMain.getPrecompRepManager().precomputedRep[keyPrecomputedRep];
@@ -365,7 +367,7 @@ namespace UMol
                     {
                         //Try with standard cartoon
 
-                        mesh = RibbonMesh.createChainMesh(segments[seg].residues, ref segResidueToVert, isTraj);
+                        mesh = RibbonMesh.createChainMesh(segments[seg].residues, ref segResidueToVert, ref segmentsMeshData, isTraj);
                         // MeshData mesh = CartoonMesh.createChainMesh(segments[seg].residues, ref residueToMesh, isTraj);
                     }
 
@@ -381,7 +383,7 @@ namespace UMol
                      !float.IsNaN(mesh.vertices[0].x) )
                 {
                     nameCartoonMesh = structName + "_" + segments[seg].residues[0].chain.name + "_CartoonMesh";
-                    createUnityMesh(segments[seg], repParent, nameCartoonMesh, mesh, ribbonMat);
+                    createUnityMesh(segments[seg], repParent, nameCartoonMesh, mesh, segmentsMeshData, ribbonMat);
                     totalVertices += mesh.vertices.Length;
                 }
 
@@ -433,7 +435,8 @@ namespace UMol
 
 
         void createUnityMesh(Segment seg, Transform parent, string name,
-            Vector3[] vertices, Vector3[] normals, int[] triangles, Color32[] colors, Material ribbonMat = null)
+            Vector3[] vertices, Vector3[] normals, int[] triangles, Color32[] colors, List<MeshData> meshSegmentsData,
+            Material ribbonMat = null)
         {
             //Resources.Load("Materials/standardColorSpecular") as Material;
             if ( ribbonMat == null )
@@ -468,6 +471,24 @@ namespace UMol
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
 
+            for (int i = 0; i < meshSegmentsData.Count; i++)
+            {
+                var segmentMeshData = meshSegmentsData[i];
+                var segmentGo = new GameObject($"collider_{i}");
+                segmentGo.transform.SetParent(go.transform);
+                segmentGo.transform.localRotation = Quaternion.identity;
+                segmentGo.transform.localPosition = Vector3.zero;
+                var segmentCollider = segmentGo.AddComponent<MeshCollider>();
+                var segmentMesh = new Mesh
+                {
+                    indexFormat = UnityEngine.Rendering.IndexFormat.UInt32,
+                    vertices = segmentMeshData.vertices,
+                    triangles = segmentMeshData.triangles,
+                    colors32 = segmentMeshData.colors
+                };
+                segmentCollider.sharedMesh = segmentMesh;
+            }
+
             meshesGO.Add(go);
             foreach (UnityMolResidue r in seg.residues)
             {
@@ -476,9 +497,9 @@ namespace UMol
             }
         }
 
-        void createUnityMesh(Segment seg, Transform parent, string name, MeshData meshD, Material ribbonMat = null)
+        void createUnityMesh(Segment seg, Transform parent, string name, MeshData meshD, List<MeshData> meshSegmentsData, Material ribbonMat = null)
         {
-            createUnityMesh(seg, parent, name, meshD.vertices, meshD.normals, meshD.triangles, meshD.colors, ribbonMat);
+            createUnityMesh(seg, parent, name, meshD.vertices, meshD.normals, meshD.triangles, meshD.colors, meshSegmentsData, ribbonMat);
         }
 
         private void getMeshColors()
