@@ -404,22 +404,6 @@ namespace UMol
                 {
                     type = "cif";
                 }
-                else if ( GROReader.GROextensions.Any(x => filename.ToLower().EndsWith(x)) )
-                {
-                    type = "gro";
-                }
-                else if ( SDFReader.SDFextensions.Any(x => filename.ToLower().EndsWith(x)) )
-                {
-                    type = "sdf";
-                }
-                else if ( MOL2Reader.MOL2extensions.Any(x => filename.ToLower().EndsWith(x)) )
-                {
-                    type = "mol2";
-                }
-                else if ( XYZReader.XYZextensions.Any(x => filename.ToLower().EndsWith(x)) )
-                {
-                    type = "xyz";
-                }
                 else
                 {
                     type = Path.GetExtension(filename).ToLower();
@@ -433,14 +417,6 @@ namespace UMol
                     return new PDBReader(filename);
                 case "cif":
                     return new PDBxReader(filename);
-                case "gro":
-                    return new GROReader(filename);
-                case "sdf":
-                    return new SDFReader(filename);
-                case "mol2":
-                    return new MOL2Reader(filename);
-                case "xyz":
-                    return new XYZReader(filename);
                 default:
                     Debug.LogWarning("The file extension '" + type + "' is not supported");
                     break;

@@ -304,10 +304,10 @@ public class SimpleGroParserTest {
         string pathTestData = "Assets/Editor/TestData";
         string fileName = "helix_2luf.gro";
 
-        GROReader r = new GROReader(pathTestData + "/"+ fileName);
-        r.modelsAsTraj = false;
-        s =  r.Read();
-        a = s.models[0].allAtoms[10];
+        // GROReader r = new GROReader(pathTestData + "/"+ fileName);
+        // r.modelsAsTraj = false;
+        // s =  r.Read();
+        // a = s.models[0].allAtoms[10];
 
     }
 
