@@ -184,6 +184,8 @@ namespace HighlightPlus {
             RaycastHit hitInfo;
             if (Physics.Raycast(ray, out hitInfo, maxDistance > 0 ? maxDistance : raycastCamera.farClipPlane, layerMask) && Vector3.Distance(hitInfo.point, ray.origin) >= minDistance) {
                 Transform t = hitInfo.collider.transform;
+              
+                Debug.Log($"<color=yellow>{t.gameObject.name} +  HITTTED </color>");
                 // is this object state controller by Highlight Trigger?
                 HighlightTrigger trigger = t.GetComponent<HighlightTrigger>();
                 if (trigger != null) return;

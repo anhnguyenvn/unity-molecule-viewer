@@ -51,6 +51,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine.Rendering;
 
 namespace UMol
 {
@@ -453,9 +454,14 @@ namespace UMol
 
             if ( normals != null )
                 m.normals = normals;
-
+            
+            var transparent = Resources.Load("transparent") as Material;
 
             GameObject go = new GameObject(name);
+            
+            // anhnguyen: comment so not drawing whole protein in 1 mesh
+
+            #region show protein mesh as a whole
             MeshFilter mf = go.AddComponent<MeshFilter>();
             if ( normals == null )
             {
@@ -463,30 +469,98 @@ namespace UMol
                 //High quality smoothing normals
                 // m.RecalculateNormals(60);
             }
-
+            
             mf.mesh = m;
             go.AddComponent<MeshRenderer>().sharedMaterial = ribbonMat;
+            
             go.transform.parent = parent;
             go.transform.localRotation = Quaternion.identity;
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
-
+            #endregion
+            
             for (int i = 0; i < meshSegmentsData.Count; i++)
             {
                 var segmentMeshData = meshSegmentsData[i];
-                var segmentGo = new GameObject($"collider_{i}");
+                var segmentGo = new GameObject($"Mesh_{i}");
+                segmentGo.isStatic = true;
+                
                 segmentGo.transform.SetParent(go.transform);
                 segmentGo.transform.localRotation = Quaternion.identity;
                 segmentGo.transform.localPosition = Vector3.zero;
+
+                // anhnguyen fix some invalid vertice index
+                
+                // method 1: add more missing vertex (cost more computation)
+                // Debug.Log($"<color=yellow>Check For segment {i}</color>");
+                // var missingVertextCountMax = -1;
+                // for (var vertexIndex = 0; vertexIndex < segmentMeshData.triangles.Length; vertexIndex++)
+                // {
+                //     var missingVertexCount = segmentMeshData.triangles[vertexIndex] - (segmentMeshData.vertices.Length - 1);
+                //     if ( missingVertexCount > 0 )
+                //     {
+                //         Debug.Log($"<color=red>--Outbound vertex index {segmentMeshData.triangles[vertexIndex]} at {vertexIndex}, {missingVertexCount} vertices needed!!</color>");
+                //         if ( missingVertexCount > missingVertextCountMax )
+                //         {
+                //             missingVertextCountMax = missingVertexCount;
+                //         }
+                //     }
+                // }
+                //
+                // // add more missing vertex from the next segment
+                //     
+                // if ( missingVertextCountMax > 0 && (i + 1 < meshSegmentsData.Count))
+                // {
+                //     var nextSegmentData = meshSegmentsData[i + 1];
+                //     for (int addingIndex = 0; addingIndex < missingVertextCountMax; addingIndex++)
+                //     {
+                //         if (addingIndex < nextSegmentData.vertices.Length)
+                //         {
+                //             var newList = segmentMeshData.vertices.Append(nextSegmentData.vertices[addingIndex]);
+                //             segmentMeshData.vertices = newList.ToArray();
+                //
+                //             var newListColor = segmentMeshData.colors.Append(nextSegmentData.colors[addingIndex]);
+                //             segmentMeshData.colors = newListColor.ToArray();
+                //         }
+                //     }
+                // } else if ( missingVertextCountMax > 0 && (i + 1 >= meshSegmentsData.Count) )
+                // {
+                //     
+                // }
+                
+                // method 2: set max index by vertices length
+                for (var vertexIndex = 0; vertexIndex < segmentMeshData.triangles.Length; vertexIndex++)
+                {
+                    var missingVertexCount = segmentMeshData.triangles[vertexIndex] - (segmentMeshData.vertices.Length - 1);
+                    if ( missingVertexCount > 0 )
+                    {
+                        Debug.Log($"<color=red>--Outbound vertex index {segmentMeshData.triangles[vertexIndex]} at {vertexIndex}, {missingVertexCount} vertices needed!!</color>");
+                        segmentMeshData.triangles[vertexIndex] = segmentMeshData.vertices.Length - 1;
+                    }
+                }
+
+                
+                
                 var segmentCollider = segmentGo.AddComponent<MeshCollider>();
                 var segmentMesh = new Mesh
                 {
-                    indexFormat = UnityEngine.Rendering.IndexFormat.UInt32,
+                    // indexFormat = UnityEngine.Rendering.IndexFormat.UInt32,
                     vertices = segmentMeshData.vertices,
                     triangles = segmentMeshData.triangles,
                     colors32 = segmentMeshData.colors
                 };
+                segmentMesh.RecalculateBounds();
+                segmentMesh.RecalculateNormals();
                 segmentCollider.sharedMesh = segmentMesh;
+                
+                var segmentMeshFilter = segmentGo.AddComponent<MeshFilter>();
+                segmentMeshFilter.mesh = segmentMesh;
+                var rdr = segmentGo.AddComponent<MeshRenderer>();
+                rdr.sharedMaterial = transparent;
+                rdr.shadowCastingMode = ShadowCastingMode.Off;
+                rdr.receiveShadows = false;
+                
+
             }
 
             meshesGO.Add(go);

@@ -1026,7 +1026,7 @@ namespace UMol
             FillSecondaryStructure(newStruct, parsedSSList);
             newStruct.parsedSSInfo = parsedSSList;
             UnityMolSelection sel = newStruct.ToSelection();
-
+            
             if ( newStruct.models.Count != 1 )
             {
                 for (int i = 1; i < newStruct.models.Count; i++)
@@ -1035,10 +1035,10 @@ namespace UMol
                         newStruct.uniqueName));
                 }
             }
-
+            
             CreateColliders(sel);
             newStruct.surfThread = startSurfaceThread(sel);
-
+            
             UnityMolMain.getStructureManager().AddStructure(newStruct);
             UnityMolMain.getSelectionManager().Add(sel);
 

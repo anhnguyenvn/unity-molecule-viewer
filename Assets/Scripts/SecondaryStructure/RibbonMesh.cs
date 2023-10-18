@@ -106,7 +106,7 @@ namespace UMol
             List<Color32> colors = new List<Color32>();
 
             //anhnguyen handle for segments
-            
+
             List<Vector3> segmentVertices = new List<Vector3>();
             List<int> segmentTriangles = new List<int>();
             List<Color32> segmentColors = new List<Color32>();
@@ -166,9 +166,9 @@ namespace UMol
             }
 
             Dictionary<Vector3, int> verticesDict = new Dictionary<Vector3, int>();
-            
+
             Dictionary<Vector3, int> dmmyVerticesDict = new Dictionary<Vector3, int>();
-            
+
             int n = nbPlane - 3;
 
             PeptidePlane pp1 = null;
@@ -214,31 +214,29 @@ namespace UMol
                     }
                 }
 
-                // vertices.Clear();
-                // triangles.Clear();
-                // colors.Clear();
-                // verticesDict.Clear();
                 createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref vertices, ref triangles,
                     ref colors, ref residueToVert, ref verticesDict, isTraj);
 
                 if ( segmentsMeshData != null ) // anhnguyen: add this one to get the segment data out
                 {
+                    // clear to have single segment data from the ref params passed in
                     segmentVertices.Clear();
                     segmentTriangles.Clear();
-                 
+                    segmentColors.Clear();
+
                     createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref segmentVertices, ref segmentTriangles,
                         ref segmentColors,
                         ref dummyResidueToVert, // anhnguyen dummy
-                        ref dmmyVerticesDict,  // anhnguyen dummy
+                        ref dmmyVerticesDict, // anhnguyen dummy
                         isTraj);
-                    
+
                     segmentsMeshData.Add(new MeshData()
                     {
                         triangles = segmentTriangles.ToArray(),
                         vertices = segmentVertices.ToArray(),
+                        colors = segmentColors.ToArray()
                     });
                 }
-                
             }
 
             MeshData mesh = new MeshData();
@@ -532,7 +530,7 @@ namespace UMol
             c1 = col1;
             c2 = col2;
         }
-        
+
         // static GameObject RootProtein
 
 
@@ -540,7 +538,7 @@ namespace UMol
             PeptidePlane pp4,
             ref List<Vector3> verticesList, ref List<int> trianglesList, ref List<Color32> colorsList,
             ref Dictionary<UnityMolResidue, List<int>> residueToVert, ref Dictionary<Vector3, int> verticesDict,
-            bool isTraj) 
+            bool isTraj)
         {
             UnityMolResidue.secondaryStructureType type0 = pp2.r1.secondaryStructure;
             UnityMolResidue.secondaryStructureType type1 = 0;
@@ -663,8 +661,8 @@ namespace UMol
             // }
             // catch {}
         }
-        
-         static void createSegmentMeshV2(int i, int n, PeptidePlane pp1, PeptidePlane pp2, PeptidePlane pp3,
+
+        static void createSegmentMeshV2(int i, int n, PeptidePlane pp1, PeptidePlane pp2, PeptidePlane pp3,
             PeptidePlane pp4,
             List<Vector3> verticesList, List<int> trianglesList, List<Color32> colorsList,
             Dictionary<UnityMolResidue, List<int>> residueToVert, Dictionary<Vector3, int> verticesDict,
@@ -787,9 +785,9 @@ namespace UMol
                 listVertId.Add(sV);
             }
 
-  
+
             AddVertToResidueDict(ref residueToVert, pp1.r3, listVertId);
-    
+
 
             // var newMesh = new GameObject($"mesh_{i}");
             // var rdrMesh = newMesh.AddComponent<MeshFilter>().mesh;
