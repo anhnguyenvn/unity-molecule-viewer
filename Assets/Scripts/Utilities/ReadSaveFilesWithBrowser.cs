@@ -160,7 +160,7 @@ public class ReadSaveFilesWithBrowser : MonoBehaviour
         string[] paths = null;
         //Use native file browser for Windows and Mac and WebGL (https://github.com/gkngkc/UnityStandaloneFileBrowser)
 #if (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX || UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN || UNITY_WEBGL )
-        if (!UnityMolMain.inVR() || forceDesktop) {
+        // if (!UnityMolMain.inVR() || forceDesktop) {
             if (extension == "")
             {
                 paths = StandaloneFileBrowser.OpenFilePanel("Open File", initPath, extensions, true);
@@ -173,10 +173,10 @@ public class ReadSaveFilesWithBrowser : MonoBehaviour
             {
                 paths = StandaloneFileBrowser.OpenFilePanel("Open File", initPath, extension, true);
             }
-        }
-        else {
-            StartDialog(readHetm);
-        }
+        // }
+        // else {
+        //     StartDialog(readHetm);
+        // }
 #else //Use asset based file browser (https://github.com/yasirkula/UnitySimpleFileBrowser)
         //Uses a coroutine
         StartDialog(readHetm);

@@ -64,13 +64,13 @@ public class activateKeyboard : MonoBehaviour {
         if(inField == null)
             inField = GetComponent<InputField>();
         
-        if (inField.isFocused && UnityMolMain.inVR())
-        {
-            if(toShow != null){
-                toShow.SetActive(true);
-                toShow.GetComponent<KeyboardUI>().inpF = inField;
-            }
-        }
+        // if (inField.isFocused && UnityMolMain.inVR())
+        // {
+        //     if(toShow != null){
+        //         toShow.SetActive(true);
+        //         toShow.GetComponent<KeyboardUI>().inpF = inField;
+        //     }
+        // }
 
     }
 }

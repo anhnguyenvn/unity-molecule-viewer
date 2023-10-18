@@ -49,12 +49,8 @@
 
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Collections;
 using System.Text;
 using System.Collections.Generic;
-using UnityEngine.XR;
-
-using VRTK;
 
 namespace UMol {
 
@@ -74,17 +70,7 @@ public class AtomRepresentationOptihb : AtomRepresentation {
         GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 
         representationParent = loadedMolGO.transform.Find(structName);
-        if (UnityMolMain.inVR() && representationParent == null) {
-
-            Transform clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-            Transform crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-            if (clref != null) {
-                representationParent = clref.Find(structName);
-            }
-            if (representationParent == null && crref != null) {
-                representationParent = crref.Find(structName);
-            }
-        }
+        
         if (representationParent == null) {
             representationParent = (new GameObject(structName).transform);
             representationParent.parent = loadedMolGO.transform;

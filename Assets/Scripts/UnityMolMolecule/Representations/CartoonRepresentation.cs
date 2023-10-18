@@ -51,7 +51,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using VRTK;
 
 namespace UMol
 {
@@ -98,20 +97,7 @@ namespace UMol
             GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 
             representationParent = loadedMolGO.transform.Find(structName);
-            if ( UnityMolMain.inVR() && representationParent == null )
-            {
-                Transform clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-                Transform crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-                if ( clref != null )
-                {
-                    representationParent = clref.Find(structName);
-                }
-
-                if ( representationParent == null && crref != null )
-                {
-                    representationParent = crref.Find(structName);
-                }
-            }
+            
 
             if ( representationParent == null )
             {

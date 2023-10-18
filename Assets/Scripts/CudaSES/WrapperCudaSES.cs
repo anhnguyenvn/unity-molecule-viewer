@@ -48,12 +48,8 @@
 
 
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
-using UMol.API;
-using VRTK;
 
 namespace UMol {
 public class WrapperCudaSES  {

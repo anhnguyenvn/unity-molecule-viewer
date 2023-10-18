@@ -164,13 +164,13 @@ public class ScreenShot : MonoBehaviour
             curCam.backgroundColor = mainCam.backgroundColor;
             curCam.farClipPlane = mainCam.farClipPlane;
             curCam.nearClipPlane = mainCam.nearClipPlane;
-            if(!UnityMolMain.inVR()){
+            // if(!UnityMolMain.inVR()){
                 curCam.fieldOfView = mainCam.fieldOfView;
                 curCam.orthographic = mainCam.orthographic;
                 if(curCam.orthographic){
                     curCam.orthographicSize = mainCam.orthographicSize;
                 }
-            }
+            // }
         }
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;

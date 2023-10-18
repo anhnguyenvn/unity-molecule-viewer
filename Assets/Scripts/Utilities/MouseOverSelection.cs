@@ -257,7 +257,9 @@ public class MouseOverSelection : MonoBehaviour {
                 createHaloGo();
             }
             //Format the text of the atom
-            textm.text = PointerHoverAtom.formatAtomText(a);
+            //anhnguyen 
+            //TODO hover atom
+            // textm.text = PointerHoverAtom.formatAtomText(a);
             haloGo.SetActive(true);
 
             UnityMolStructureManager sm = UnityMolMain.getStructureManager();

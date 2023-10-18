@@ -48,11 +48,8 @@
 
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.XR;
-using VRTK;
 
 namespace UMol {
 public class DXSurfaceRepresentation : ISurfaceRepresentation {
@@ -83,17 +80,7 @@ public class DXSurfaceRepresentation : ISurfaceRepresentation {
         GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 
         representationParent = loadedMolGO.transform.Find(structName);
-        if (UnityMolMain.inVR() && representationParent == null) {
 
-            Transform clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-            Transform crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-            if (clref != null) {
-                representationParent = clref.Find(structName);
-            }
-            if (representationParent == null && crref != null) {
-                representationParent = crref.Find(structName);
-            }
-        }
         if (representationParent == null) {
             representationParent = (new GameObject(structName).transform);
             representationParent.parent = loadedMolGO.transform;

@@ -49,12 +49,8 @@
 
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Linq;
-using UnityEngine.XR;
-using VRTK;
 using ArtemisClientPointer = System.IntPtr;
 
 namespace UMol
@@ -399,25 +395,6 @@ namespace UMol
 
         void switchControllerMode(bool IMDOn)
         {
-            if ( UnityMolMain.inVR() )
-            {
-                if ( clref == null )
-                    clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-                if ( crref == null )
-                    crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-
-                if ( clref != null )
-                {
-                    clref.gameObject.GetComponent<PointerAtomSelection>().enabled = !IMDOn;
-                    clref.gameObject.GetComponent<PointerIMD>().enabled = IMDOn;
-                }
-
-                if ( crref != null )
-                {
-                    crref.gameObject.GetComponent<PointerAtomSelection>().enabled = !IMDOn;
-                    crref.gameObject.GetComponent<PointerIMD>().enabled = IMDOn;
-                }
-            }
         }
 
         void Update()

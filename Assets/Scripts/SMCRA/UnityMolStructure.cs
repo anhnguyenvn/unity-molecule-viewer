@@ -52,7 +52,7 @@ using UnityEngine.XR;
 using System.Collections.Generic;
 using System.Linq;
 
-using VRTK;
+
 namespace UMol {
 
 /// <summary>
@@ -354,17 +354,6 @@ public class UnityMolStructure {
 				GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 				string sName = ToSelectionName();
 				Transform sP = loadedMolGO.transform.Find(ToSelectionName());
-				if (UnityMolMain.inVR() && sP == null) {
-
-					Transform clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-					Transform crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-					if (clref != null) {
-						sP = clref.Find(sName);
-					}
-					if (sP == null && crref != null) {
-						sP = crref.Find(sName);
-					}
-				}
 
 				if (sP == null) {
 					structureParent = new GameObject(sName);

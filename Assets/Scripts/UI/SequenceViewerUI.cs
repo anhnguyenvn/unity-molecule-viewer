@@ -79,12 +79,12 @@ public class SequenceViewerUI : MonoBehaviour {
 		GameObject seqViewer = null;
 
 		if (seqViewerT == null) {
-			if (UnityMolMain.inVR()) {
-				seqViewer = GameObject.Instantiate((GameObject) Resources.Load("Prefabs/CanvasSequenceViewerVR"));
-			}
-			else{
+			// if (UnityMolMain.inVR()) {
+			// 	seqViewer = GameObject.Instantiate((GameObject) Resources.Load("Prefabs/CanvasSequenceViewerVR"));
+			// }
+			// else{
 				seqViewer = GameObject.Instantiate((GameObject) Resources.Load("Prefabs/CanvasSequenceViewer"));
-			}
+			// }
 			seqViewer.name = seqVName;
 			seqViewer.transform.SetParent(transform);
 		}

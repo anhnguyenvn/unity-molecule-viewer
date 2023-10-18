@@ -4325,12 +4325,6 @@ namespace UMol
             /// </summary>
             public static void enableDOF()
             {
-                if ( UnityMolMain.inVR() )
-                {
-                    Debug.LogWarning("Cannot enable DOF in VR");
-                    return;
-                }
-
                 try
                 {
                     MouseAutoFocus maf = Camera.main.gameObject.GetComponent<MouseAutoFocus>();

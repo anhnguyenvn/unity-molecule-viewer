@@ -133,25 +133,25 @@ namespace SimpleFileBrowser
 			{
 				if( m_instance == null )
 				{
-					if(UnityMolMain.inVR()){
-                        UIManager[] uims = FindObjectsOfType<UIManager>();
-                        if(uims != null && uims.Length > 0) {
-                        	UIManager uim = null;
-                        	foreach(UIManager u in uims){
-                        		if(u.transform.name.Contains("VR")){
-                        			uim = u;
-                        			break;
-                        		}
-                        	}
-                        	if(uim != null){
-    							m_instance = Instantiate( Resources.Load<GameObject>( "SimpleFileBrowserCanvasVR" ), uim.transform ).GetComponent<FileBrowser>();
-    						}
-                        }
-					}
-					else{
+					// if(UnityMolMain.inVR()){
+     //                    UIManager[] uims = FindObjectsOfType<UIManager>();
+     //                    if(uims != null && uims.Length > 0) {
+     //                    	UIManager uim = null;
+     //                    	foreach(UIManager u in uims){
+     //                    		if(u.transform.name.Contains("VR")){
+     //                    			uim = u;
+     //                    			break;
+     //                    		}
+     //                    	}
+     //                    	if(uim != null){
+    	// 						m_instance = Instantiate( Resources.Load<GameObject>( "SimpleFileBrowserCanvasVR" ), uim.transform ).GetComponent<FileBrowser>();
+    	// 					}
+     //                    }
+					// }
+					// else{
 						m_instance = Instantiate( Resources.Load<GameObject>( "SimpleFileBrowserCanvas" ) ).GetComponent<FileBrowser>();
                         DontDestroyOnLoad( m_instance.gameObject );
-					}
+					// }
 
 					m_instance.gameObject.SetActive( false );
 				}

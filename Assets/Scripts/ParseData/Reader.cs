@@ -55,7 +55,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using VRTK;
 
 namespace UMol
 {
@@ -268,28 +267,7 @@ namespace UMol
             GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 
             Transform repParent = loadedMolGO.transform.Find(sel.name);
-            if ( UnityMolMain.inVR() && repParent == null )
-            {
-                try
-                {
-                    Transform clref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.LeftController);
-                    Transform crref = VRTK_DeviceFinder.DeviceTransform(VRTK_DeviceFinder.Devices.RightController);
-                    if ( clref != null )
-                    {
-                        repParent = clref.Find(sel.name);
-                    }
-
-                    if ( repParent == null && crref != null )
-                    {
-                        repParent = crref.Find(sel.name);
-                    }
-                }
-                catch
-                {
-                    //VRTK didn't start so ignore this error
-                }
-            }
-
+           
             if ( repParent == null )
             {
                 repParent = (new GameObject(sel.name).transform);

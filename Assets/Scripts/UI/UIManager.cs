@@ -2025,10 +2025,10 @@ public class UIManager : MonoBehaviour {
 	public void clearAnnotations() {
 		APIPython.clearAnnotations();
 
-		var foundPM = FindObjectsOfType<PointerMeasurements>();
-		foreach (var pm in foundPM) {
-			pm.resetTouchedAtoms();
-		}
+		// var foundPM = FindObjectsOfType<PointerMeasurements>();
+		// foreach (var pm in foundPM) {
+		// 	pm.resetTouchedAtoms();
+		// }
 	}
 
 	public UnityMolSelection selectActiveSite(string structureName) {

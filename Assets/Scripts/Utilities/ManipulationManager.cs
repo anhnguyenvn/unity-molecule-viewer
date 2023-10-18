@@ -107,21 +107,21 @@ public class ManipulationManager : MonoBehaviour {
             Vector3 bary = s.currentModel.centerOfGravity;
             Transform molPar = tpar.Find(s.ToSelectionName());
             Vector3 worldBary = molPar.TransformPoint(bary);
-            if (!UnityMolMain.inVR()) {
+            // if (!UnityMolMain.inVR()) {
                 tpar.Translate(-worldBary, Space.World);
                 setRotationCenter(molPar.TransformPoint(bary));
-            }
-            else {
-                tpar.Translate(-worldBary, Space.World);
-
-                Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
-
-                if (head != null) {
-                    Vector3 targetPos = head.position + head.forward;
-                    tpar.Translate(targetPos, Space.World);
-                }
-                setRotationCenter(molPar.TransformPoint(bary));
-            }
+            // }
+            // else {
+            //     tpar.Translate(-worldBary, Space.World);
+            //
+            //     Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
+            //
+            //     if (head != null) {
+            //         Vector3 targetPos = head.position + head.forward;
+            //         tpar.Translate(targetPos, Space.World);
+            //     }
+            //     setRotationCenter(molPar.TransformPoint(bary));
+            // }
             UnityMolMain.getCustomRaycast().needsUpdatePos = true;
         }
     }
@@ -146,16 +146,7 @@ public class ManipulationManager : MonoBehaviour {
 
         Vector3 savedPos = tpar.position;
         tpar.Translate(-worldBary, Space.World);
-
-
-        if (UnityMolMain.inVR()) {
-            Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
-            if (head != null) {
-                Vector3 headTarget = head.position + head.forward;
-                tpar.Translate(headTarget, Space.World);
-            }
-        }
-
+        
         Vector3 targetPos = tpar.position;
         tpar.position = savedPos;
 
@@ -184,28 +175,18 @@ public class ManipulationManager : MonoBehaviour {
             Vector3 bary = computeCenterOfGravitySel(sel);
             Transform molPar = getSelectionParent(tpar, sel);
             Vector3 worldBary = molPar.TransformPoint(bary);
-            if (!UnityMolMain.inVR()) {
-                tpar.Translate(-worldBary, Space.World);
-                if (distance > 0.0f) {
-                    float dist = Vector3.Distance(transform.position, tpar.position);
-                    tpar.Translate(new Vector3(0.0f, 0.0f, - dist + distance), Space.World);
-                }
+            
+            tpar.Translate(-worldBary, Space.World);
 
-                // tpar.Translate(new Vector3(0.0f, 0.0f, -distance) , Space.World);
-                setRotationCenter(molPar.TransformPoint(bary));
-            }
-            else {
-                tpar.Translate(-worldBary, Space.World);
-
-                Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
-
-                if (head != null) {
-                    Vector3 targetPos = head.position + (head.forward * distance);
-                    tpar.Translate(targetPos, Space.World);
-                }
-                setRotationCenter(molPar.TransformPoint(bary));
-                UnityMolMain.getCustomRaycast().needsUpdatePos = true;
-            }
+            // Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
+            //
+            // if (head != null) {
+            //     Vector3 targetPos = head.position + (head.forward * distance);
+            //     tpar.Translate(targetPos, Space.World);
+            // }
+            // setRotationCenter(molPar.TransformPoint(bary));
+            // UnityMolMain.getCustomRaycast().needsUpdatePos = true;
+            
 
         }
     }
@@ -228,15 +209,6 @@ public class ManipulationManager : MonoBehaviour {
         if (distance > 0.0f) {
             float dist = Vector3.Distance(transform.position, tpar.position);
             tpar.Translate(new Vector3(0.0f, 0.0f, - dist + distance), Space.World);
-        }
-
-
-        if (UnityMolMain.inVR()) {
-            Transform head = VRTK.VRTK_DeviceFinder.HeadsetCamera();
-            if (head != null) {
-                Vector3 headTarget = head.position + head.forward;
-                tpar.Translate(headTarget, Space.World);
-            }
         }
 
         Vector3 targetPos = tpar.position;
@@ -270,7 +242,7 @@ public class ManipulationManager : MonoBehaviour {
         go2.transform.parent = molPar;
 
 
-        if (!UnityMolMain.inVR()) {
+        // if (!UnityMolMain.inVR()) {
             tpar.Translate(-targetPos, Space.World);
             float dist = Vector3.Distance(transform.position, molPar.TransformPoint(localTarget));
             float distPovTarget = Vector3.Distance(pov, targetPos);
@@ -286,11 +258,11 @@ public class ManipulationManager : MonoBehaviour {
 
             tpar.RotateAround(molPar.TransformPoint(localTarget), axis, angle);
 
-
-        }
-        else {
-
-        }
+        //
+        // }
+        // else {
+        //
+        // }
 
         setRotationCenter(molPar.TransformPoint(localTarget));
         // Debug.Log("New current center = " + currentCenterPosition.ToString("F4"));
@@ -406,9 +378,9 @@ public class ManipulationManager : MonoBehaviour {
             UnityMolMain.getCustomRaycast().needsUpdatePos = true;
         }
 
-        if (disableMouseInVR && UnityMolMain.inVR()) {
-            return;
-        }
+        // if (disableMouseInVR && UnityMolMain.inVR()) {
+        //     return;
+        // }
         if (currentTransform == null)
             setSelectedOject(UnityMolMain.getRepresentationParent().transform);
 
