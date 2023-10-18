@@ -74,18 +74,8 @@ public class UnityMolTopologyDef {
         Dictionary<string, List<pairString>> result = new Dictionary<string, List<pairString>>();
 
         // Debug.Log("Reading OpenMM topology file: '"+path+"'");
-        StreamReader sr;
-
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            var textStream = new StringReaderStream(AndroidUtils.GetFileText(path));
-            sr = new StreamReader(textStream);
-        }
-        else
-        {
-            sr = new StreamReader(path);
-        }
-
+        StreamReader sr = new StreamReader(path);
+        
         using (sr)
         {
 

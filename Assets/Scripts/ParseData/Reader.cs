@@ -140,22 +140,13 @@ namespace UMol
             }
             else
             {
-                if ( Application.platform == RuntimePlatform.Android )
+                FileInfo LocalFile = new FileInfo(fileName);
+                if ( !LocalFile.Exists )
                 {
-                    Stream textStream;
-                    textStream = new StringReaderStream(AndroidUtils.GetFileText(fileName));
-                    sr = new StreamReader(textStream);
+                    throw new FileNotFoundException("File not found: " + fileName);
                 }
-                else
-                {
-                    FileInfo LocalFile = new FileInfo(fileName);
-                    if ( !LocalFile.Exists )
-                    {
-                        throw new FileNotFoundException("File not found: " + fileName);
-                    }
 
-                    sr = new StreamReader(fileName);
-                }
+                sr = new StreamReader(fileName);
             }
 
             using (sr)
@@ -267,7 +258,7 @@ namespace UMol
             GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
 
             Transform repParent = loadedMolGO.transform.Find(sel.name);
-           
+
             if ( repParent == null )
             {
                 repParent = (new GameObject(sel.name).transform);
