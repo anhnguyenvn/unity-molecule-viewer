@@ -483,6 +483,19 @@ namespace UMol
             {
                 var segmentMeshData = meshSegmentsData[i];
                 var segmentGo = new GameObject($"Mesh_{i}");
+                var highlighted = segmentGo.AddComponent<HighlightedMeshItem>();
+                var segmentData = seg.residues[i];
+
+                var longName = segmentData.name;
+                var shortName = UnityMolResidue.FromResidue3To1(longName);
+                
+                highlighted.SetInfo(new HighlightedInfo()
+                {
+                    Order = segmentData.id,
+                    ShortName = shortName,
+                    LongName = longName
+                });
+                
                 segmentGo.isStatic = true;
                 
                 segmentGo.transform.SetParent(go.transform);

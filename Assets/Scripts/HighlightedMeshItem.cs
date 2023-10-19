@@ -77,6 +77,7 @@ public class HighlightedMeshItem : MonoBehaviour
     }
 }
 
+[Serializable]
 public struct HighlightedInfo
 {
     public int Order;

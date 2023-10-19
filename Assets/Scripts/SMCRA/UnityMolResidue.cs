@@ -248,6 +248,12 @@ public class UnityMolResidue {
         }
         return residueName3To1[res3];
     }
+    public static string FromResidue3To1(string res3) {
+        if (!residueName3To1.ContainsKey(res3)) {
+            throw new System.Exception("Undefinied 3 letters residue name '" + res3 + "'");
+        }
+        return residueName3To1[res3];
+    }
     public string fromResidue1To3(string res1) {
         if (!residueName1To3.ContainsKey(res1)) {
             throw new System.Exception("Undefinied 1 letter residue name '" + res1 + "'");
