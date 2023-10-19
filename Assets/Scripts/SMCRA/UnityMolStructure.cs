@@ -103,17 +103,7 @@ public class UnityMolStructure {
 	/// <summary>
 	/// Trajectory reader using xdrfile library
 	/// </summary>
-	public XDRFileReader xdr;
-
-	/// <summary>
-	/// Trajectory reader using xdrfile library
-	/// </summary>
 	public ArtemisManager artemisM;
-
-	/// <summary>
-	/// Trajectory player calling trajNext from a monobehaviour Update loop
-	/// </summary>
-	public TrajectoryPlayer trajPlayer;
 
 	/// <summary>
 	/// Multiple models should be read as a trajectory
@@ -281,47 +271,6 @@ public class UnityMolStructure {
 		}
 	}
 
-	public void readTrajectoryXDR(string trajPath) {
-		if (xdr == null && !trajectoryLoaded) {
-			xdr = new XDRFileReader();
-		}
-		int result = xdr.open_trajectory(this, trajPath);
-		if (result >= 0 ) {
-			xdr.load_trajectory();
-		}
-		else if (result == (int) XDRFileReaderStatus.TRAJECTORYPRESENT) {
-			throw new System.Exception("Trajectory already exists");
-		}
-		else {
-			unloadTrajectoryXDR();
-			throw new System.Exception("Trajectory reader failure " + result);
-		}
-	}
-
-	public void unloadTrajectoryXDR() {
-		if (xdr != null) {
-			xdr.Clear();
-			xdr = null;
-			for (int i = 0; i < currentModel.allAtoms.Count; i++) {
-				currentModel.allAtoms[i].position = currentModel.allAtoms[i].oriPosition;
-			}
-			currentModel.ComputeCenterOfGravity();
-
-			updateRepresentations(trajectory: false);
-
-			trajAtomPositions = null;
-		}
-
-		if (trajPlayer) {
-			GameObject.DestroyImmediate(trajPlayer);
-		}
-#if !DISABLE_HIGHLIGHT
-		UnityMolHighlightManager hM = UnityMolMain.getHighlightManager();
-		hM.Clean();
-#endif
-
-	}
-
 	public void readDX(string dxPath) {
 		if (dxr != null) {
 			unloadDX();
@@ -466,103 +415,6 @@ public class UnityMolStructure {
 		Debug.LogError("This structure does not contain several models");
 	}
 
-	public void trajNext(bool forward = true, bool loop = true) {
-		if (xdr != null && trajectoryLoaded) {
-			int newFrameId = 0;
-			if (forward) {
-				newFrameId = xdr.currentFrame + 1;
-				if (newFrameId >= xdr.numberFrames) {
-					if (loop) {
-						xdr.sync_scene_with_frame(0);
-					}
-					else {
-						xdr.sync_scene_with_frame(xdr.numberFrames - 1);
-					}
-				}
-				else {
-					xdr.sync_scene_with_frame(newFrameId);
-				}
-			}
-			else {
-				newFrameId = xdr.currentFrame - 1;
-				if (newFrameId < 0) {
-					if (loop) {
-						xdr.sync_scene_with_frame(xdr.numberFrames - 1);
-					}
-					else {
-						xdr.sync_scene_with_frame(0);
-					}
-				}
-				else {
-					xdr.sync_scene_with_frame(newFrameId);
-				}
-			}
-
-			updateRepresentations();
-		}
-		else {
-			Debug.LogError("No trajectory loaded for this structure");
-		}
-	}
-
-	public void trajNextSmooth(float t, bool forward = true, bool loop = true, bool newFrame = false) {
-		if (xdr != null && trajectoryLoaded) {
-			int newFrameId = xdr.currentFrame;
-			if (forward) {
-				if (newFrame) {
-					newFrameId = xdr.currentFrame + 1;
-				}
-				if (newFrameId + 1 >= xdr.numberFrames) {
-					if (loop) {
-						xdr.sync_scene_with_frame(0);
-					}
-					else
-						xdr.sync_scene_with_frame(xdr.numberFrames - 1);
-				}
-				else {
-					xdr.sync_scene_with_frame_smooth(newFrameId, newFrameId + 1, t, newFrame);
-				}
-			}
-			else {
-				if (newFrame) {
-					newFrameId = xdr.currentFrame - 1;
-				}
-				if (newFrameId - 1 < 0) {
-					if (loop) {
-						xdr.sync_scene_with_frame(xdr.numberFrames - 1);
-					}
-					else {
-						xdr.sync_scene_with_frame(0);
-					}
-				}
-				else {
-					xdr.sync_scene_with_frame_smooth(newFrameId, newFrameId - 1, t, newFrame);
-				}
-			}
-
-			updateRepresentations();
-		}
-		else {
-			Debug.LogError("No trajectory loaded for this structure");
-		}
-	}
-
-
-	public void trajSetFrame(int idF) {
-		if (xdr != null && trajectoryLoaded) {
-			if (idF >= 0 && idF < xdr.numberFrames) {
-				xdr.sync_scene_with_frame(idF);
-				updateRepresentations();
-			}
-			else {
-				Debug.LogWarning("Wrong frame number");
-			}
-		}
-		else {
-			Debug.LogError("No trajectory loaded for this structure");
-		}
-	}
-
 	/// <summary>
 	/// Update positions of GameObject recorded in atomToGo and update representations with new positions
 	/// </summary>
@@ -655,32 +507,6 @@ public class UnityMolStructure {
 		currentModel.ComputeCenterOfGravity();
 		UnityMolMain.getCustomRaycast().needsUpdatePos = true;
 
-	}
-
-	public void createTrajectoryPlayer() {
-		if (trajPlayer == null) {
-			UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-			GameObject structureParent = sm.GetStructureGameObject(uniqueName);
-
-			if (structureParent == null) {
-				GameObject loadedMolGO = UnityMolMain.getRepresentationParent();
-
-				structureParent = loadedMolGO.transform.Find(ToSelectionName()).gameObject;
-				if (structureParent == null) {
-					structureParent = new GameObject(ToSelectionName());
-					structureParent.transform.parent = loadedMolGO.transform;
-					structureParent.transform.localPosition = Vector3.zero;
-					structureParent.transform.localRotation = Quaternion.identity;
-					structureParent.transform.localScale = Vector3.one;
-				}
-			}
-			trajPlayer = structureParent.AddComponent<TrajectoryPlayer>();
-			trajPlayer.play = true;
-			trajPlayer.s = this;
-		}
-		else {
-			Debug.LogWarning("Trajectory player already exists for this structure");
-		}
 	}
 
 	/// <summary>
@@ -951,7 +777,6 @@ public class UnityMolStructure {
 			modelFrames.Clear();
 		}
 		disconnectIMD();
-		unloadTrajectoryXDR();
 		if (surfThread != null) {
 			surfThread.Clear();
 		}

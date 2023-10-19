@@ -99,44 +99,44 @@ public class ModelsPlayer : MonoBehaviour {
     }
 
     void Init(){
-#if !DISABLE_MAINUI
-        var uiMan = GameObject.FindObjectsOfType<UIManager>();
-        if (uiMan.Length == 0) {
-            return;
-        }
-        if(!uiMan[0].structureNameToUIObject.ContainsKey(s.uniqueName)){
-            return;
-        }
-        modelUI = uiMan[0].structureNameToUIObject[s.uniqueName].transform.Find("Model Menu").gameObject;
-        modelUI.SetActive(true);
-        modelText = modelUI.transform.Find("Row 1/Current Model").GetComponent<Text>();
-        modelCountText = modelUI.transform.Find("Row 1/Model Count").GetComponent<Text>();
-        modelSlider = modelUI.transform.Find("Row 2/Timeline").GetComponent<Slider>();
-        loopToggle = modelUI.transform.Find("Row 5/Loop").GetComponent<Toggle>();
-        forwardToggle = modelUI.transform.Find("Row 5/ForwardSwitch").GetComponent<Toggle>();
-        frameRateSlider = modelUI.transform.Find("Row 4/FrameRate").GetComponent<Slider>();
-        framerateText = modelUI.transform.Find("Row 4/Current FrameRate").GetComponent<Text>();
+// #if !DISABLE_MAINUI
+//         var uiMan = GameObject.FindObjectsOfType<UIManager>();
+//         if (uiMan.Length == 0) {
+//             return;
+//         }
+//         if(!uiMan[0].structureNameToUIObject.ContainsKey(s.uniqueName)){
+//             return;
+//         }
+//         modelUI = uiMan[0].structureNameToUIObject[s.uniqueName].transform.Find("Model Menu").gameObject;
+//         modelUI.SetActive(true);
+//         modelText = modelUI.transform.Find("Row 1/Current Model").GetComponent<Text>();
+//         modelCountText = modelUI.transform.Find("Row 1/Model Count").GetComponent<Text>();
+//         modelSlider = modelUI.transform.Find("Row 2/Timeline").GetComponent<Slider>();
+//         loopToggle = modelUI.transform.Find("Row 5/Loop").GetComponent<Toggle>();
+//         forwardToggle = modelUI.transform.Find("Row 5/ForwardSwitch").GetComponent<Toggle>();
+//         frameRateSlider = modelUI.transform.Find("Row 4/FrameRate").GetComponent<Slider>();
+//         framerateText = modelUI.transform.Find("Row 4/Current FrameRate").GetComponent<Text>();
+//
+//
+//         modelUI.transform.Find("Row 3/Play").GetComponent<Button>().onClick.AddListener(switchPlay);
+//         loopToggle.onValueChanged.AddListener((value) => {switchLoop(value);});
+//
+//         forwardToggle.onValueChanged.AddListener((value) => {switchForward(value);});
+//
+//         modelUI.transform.Find("Row 5/BackForth").GetComponent<Toggle>().onValueChanged.AddListener((value) => {switchBackForth(value);});
+//
+//         modelUI.transform.Find("Row 3/Backward").GetComponent<Button>().onClick.AddListener(forcePrevFrame);
+//         modelUI.transform.Find("Row 3/Forward").GetComponent<Button>().onClick.AddListener(forceNextFrame);
+//
+//         modelSlider.onValueChanged.AddListener(setModel);
+//
+//         modelUI.transform.Find("Row 4/FrameRate").GetComponent<Slider>().onValueChanged.AddListener(changeFrameRate);
+//
+//         updateModelCount();
+//         updateModelNumber();
+//         updateFramerateValue();
 
-
-        modelUI.transform.Find("Row 3/Play").GetComponent<Button>().onClick.AddListener(switchPlay);
-        loopToggle.onValueChanged.AddListener((value) => {switchLoop(value);});
-
-        forwardToggle.onValueChanged.AddListener((value) => {switchForward(value);});
-
-        modelUI.transform.Find("Row 5/BackForth").GetComponent<Toggle>().onValueChanged.AddListener((value) => {switchBackForth(value);});
-
-        modelUI.transform.Find("Row 3/Backward").GetComponent<Button>().onClick.AddListener(forcePrevFrame);
-        modelUI.transform.Find("Row 3/Forward").GetComponent<Button>().onClick.AddListener(forceNextFrame);
-
-        modelSlider.onValueChanged.AddListener(setModel);
-
-        modelUI.transform.Find("Row 4/FrameRate").GetComponent<Slider>().onValueChanged.AddListener(changeFrameRate);
-
-        updateModelCount();
-        updateModelNumber();
-        updateFramerateValue();
-
-#endif
+// #endif
 
     }
 

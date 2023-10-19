@@ -359,7 +359,6 @@ public class UnityMolSelectionManager {
 #if !DISABLE_HIGHLIGHT
         UnityMolHighlightManager hM = UnityMolMain.getHighlightManager();
         hM.Clean();
-        hM.HighlightAtoms(currentSelection);
 #endif
     }
 

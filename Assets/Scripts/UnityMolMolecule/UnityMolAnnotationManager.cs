@@ -73,11 +73,6 @@ public class UnityMolAnnotationManager : MonoBehaviour {
 
     //Do the update only if a trajectory is playing
     void Update() {
-        if (APIPython.isATrajectoryPlaying()) {
-            foreach (UnityMolAnnotation anno in allAnnotations) {
-                anno.Update();
-            }
-        }
         foreach (UnityMolAnnotation anno in allAnnotations) {
             anno.UnityUpdate();
         }

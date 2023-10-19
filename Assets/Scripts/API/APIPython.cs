@@ -629,55 +629,7 @@ namespace UMol
 
                 s.setModel(modelId);
             }
-
-            /// <summary>
-            /// Load a trajectory for a loaded structure
-            /// It creates a XDRFileReader in the corresponding UnityMolStructure and a TrajectoryPlayer
-            /// </summary>
-            public static void loadTraj(string structureName, string path)
-            {
-                UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-
-                if ( sm.loadedStructures.Count == 0 )
-                {
-                    Debug.LogWarning("No molecule loaded");
-                    return;
-                }
-
-                UnityMolStructure s = sm.GetStructure(structureName);
-
-                try
-                {
-                    s.readTrajectoryXDR(path);
-                    s.createTrajectoryPlayer();
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError("Could not load trajectory file '" + path + "'");
-#if UNITY_EDITOR
-                    Debug.LogError(e);
-#endif
-                    return;
-                }
-            }
-
-            /// <summary>
-            /// Unload a trajectory for a specific structure
-            /// </summary>
-            public static void unloadTraj(string structureName)
-            {
-                UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-
-                if ( sm.loadedStructures.Count == 0 )
-                {
-                    Debug.LogWarning("No molecule loaded");
-                    return;
-                }
-
-                UnityMolStructure s = sm.GetStructure(structureName);
-                s.unloadTrajectoryXDR();
-            }
-
+           
             /// <summary>
             /// Load a density map for a specific structure
             /// This function creates a DXReader instance in the UnityMolStructure
@@ -3444,7 +3396,6 @@ namespace UMol
 #if !DISABLE_HIGHLIGHT
                 UnityMolHighlightManager hM = UnityMolMain.getHighlightManager();
                 hM.Clean();
-                hM.HighlightAtoms(sumSel);
 #endif
 
                 if ( !silent )
@@ -3514,7 +3465,6 @@ namespace UMol
 #if !DISABLE_HIGHLIGHT
                 UnityMolHighlightManager hM = UnityMolMain.getHighlightManager();
                 hM.Clean();
-                hM.HighlightAtoms(selM.selections[name]);
 #endif
 
 
@@ -3832,23 +3782,6 @@ namespace UMol
                 selM.ClearCurrentSelection();
             }
 
-            /// <summary>
-            /// Utility function to test if a trajectory is playing for any loaded molecule
-            /// </summary>
-            public static bool isATrajectoryPlaying()
-            {
-                UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-                foreach (UnityMolStructure s in sm.loadedStructures)
-                {
-                    if ( s.trajPlayer && s.trajPlayer.play )
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
             public static void setUpdateSelectionTraj(string selName, bool v)
             {
                 UnityMolSelectionManager selM = UnityMolMain.getSelectionManager();
@@ -3990,51 +3923,6 @@ namespace UMol
             }
 
             /// <summary>
-            /// Enable outline post-process effect
-            /// </summary>
-            public static void enableOutline()
-            {
-                try
-                {
-                    OutlineEffectUtil outlineScript = Camera.main.gameObject.GetComponent<OutlineEffectUtil>();
-                    if ( outlineScript == null )
-                    {
-                        outlineScript = Camera.main.gameObject.AddComponent<OutlineEffectUtil>();
-                    }
-
-                    outlineScript.enableOutline();
-                }
-                catch
-                {
-                    Debug.LogError("Couldn't enable Outline effect");
-                    return;
-                }
-            }
-
-            /// <summary>
-            /// Disable outline effect
-            /// </summary>
-            public static void disableOutline()
-            {
-                try
-                {
-                    OutlineEffectUtil outlineScript = Camera.main.gameObject.GetComponent<OutlineEffectUtil>();
-                    if ( outlineScript == null )
-                    {
-                        outlineScript = Camera.main.gameObject.AddComponent<OutlineEffectUtil>();
-                    }
-
-                    outlineScript.disableOutline();
-                }
-                catch
-                {
-                    Debug.LogError("Couldn't disable Outline effect");
-                    return;
-                }
-            }
-
-
-            /// <summary>
             /// Utility function to change the material of highlighted selection
             /// </summary>
             public static void changeHighlightMaterial(Material newMat)
@@ -4045,31 +3933,6 @@ namespace UMol
 #endif
             }
 
-            /// <summary>
-            /// Take a screenshot of the current viewpoint with a specific resolution
-            /// </summary>
-            public static void screenshot(string path, int resolutionWidth = 1280, int resolutionHeight = 720,
-                bool transparentBG = false)
-            {
-                RecordManager.takeScreenshot(path, resolutionWidth, resolutionHeight, transparentBG);
-            }
-
-            /// <summary>
-            /// Start to record a video with FFMPEG at a specific resolution and framerate
-            /// </summary>
-            public static void startVideo(string filePath, int resolutionWidth = 1280, int resolutionHeight = 720,
-                int frameRate = 30)
-            {
-                RecordManager.startRecordingVideo(filePath, resolutionWidth, resolutionHeight, frameRate);
-            }
-
-            /// <summary>
-            /// Stop recording
-            /// </summary>
-            public static void stopVideo()
-            {
-                RecordManager.stopRecordingVideo();
-            }
 
            
             /// <summary>
@@ -4350,27 +4213,6 @@ namespace UMol
                 {
                     //Remove a complete loaded molecule
                     ReduceWrapper.callReduceOnStructure(s);
-                }
-                else
-                {
-                    Debug.LogError("Wrong structure name");
-                    return;
-                }
-            }
-
-            /// <summary>
-            /// Use HAAD method to add hydrogens
-            /// </summary>
-            public static void addHydrogensHaad(string structureName)
-            {
-                UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-                UnityMolStructure s = sm.GetStructure(structureName);
-
-                if ( s != null )
-                {
-                    //Remove a complete loaded molecule
-                    // ReduceWrapper.callReduceOnStructure(s);
-                    HaadWrapper.callHaadOnStructure(s);
                 }
                 else
                 {
