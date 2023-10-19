@@ -582,6 +582,9 @@ namespace UMol
                 if ( !residueToGo.ContainsKey(r) )
                     residueToGo.Add(r, go);
             }
+            
+            // signal that all meshes are created with info
+            HighlightedMeshItem.AllHighlightedInfoLoaded();
         }
 
         void createUnityMesh(Segment seg, Transform parent, string name, MeshData meshD, List<MeshData> meshSegmentsData, Material ribbonMat = null)

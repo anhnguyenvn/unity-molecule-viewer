@@ -44,8 +44,8 @@ public class HighlightedMeshItem : MonoBehaviour
         }
         
         if ( _highlightManager == null ) return;
-        _highlightManager.OnObjectHighlightStart -= HighlightStarted;
-        _highlightManager.OnObjectHighlightEnd -= HighlightEnded;
+        // _highlightManager.OnObjectHighlightStart -= HighlightStarted;
+        // _highlightManager.OnObjectHighlightEnd -= HighlightEnded;
     }
 
     private bool HighlightEnded(GameObject unhighlighted)
@@ -53,9 +53,9 @@ public class HighlightedMeshItem : MonoBehaviour
         if ( unhighlighted != null && unhighlighted.GetInstanceID() == this.GetInstanceID() )
         {
             OnHighlightedInfo?.Invoke(_info, false);
-            return true;
         }
-        return false;
+        
+        return true;
     }
 
     private bool HighlightStarted(GameObject highlighted)
@@ -63,13 +63,13 @@ public class HighlightedMeshItem : MonoBehaviour
         if ( highlighted != null && highlighted.GetInstanceID() == this.GetInstanceID() )
         {
             OnHighlightedInfo?.Invoke(_info, true);
-            return true;
         }
 
-        return false;
+        return true;
     }
+    
 
-    private static void AllHighlightedInfoLoaded()
+    public static void AllHighlightedInfoLoaded()
     {
         if ( AllItems == null ) return;
         var allInfos = AllItems.Select(e => e._info);
