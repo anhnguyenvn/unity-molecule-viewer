@@ -20,6 +20,8 @@ public class SimpleViewer : MonoBehaviour
     [Header("Protein")] [SerializeField]
     private float _rotateSpeed = 50f;
 
+    [SerializeField] private Transform _placeHolder;
+    
     
     
     private void Awake()
@@ -34,6 +36,11 @@ public class SimpleViewer : MonoBehaviour
             yield return new WaitForSeconds(0.25f);
             _proteinGameObject = UnityMolMain.getRepresentationParent();
         }
+
+        _proteinGameObject.transform.position = _placeHolder.position;
+        _proteinGameObject.transform.rotation = _placeHolder.rotation;
+        _proteinGameObject.transform.localScale = _placeHolder.localScale;
+        
     }
 
     // Update is called once per frame
