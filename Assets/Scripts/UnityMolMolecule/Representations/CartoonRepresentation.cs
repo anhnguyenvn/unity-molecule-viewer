@@ -329,7 +329,6 @@ namespace UMol
 
             for (int seg = 0; seg < segments.Count; seg++)
             {
-                Debug.Log("<color=yellow>CARTOON MESH</color>");
                 Dictionary<UnityMolResidue, List<int>> segResidueToVert = new Dictionary<UnityMolResidue, List<int>>();
                 int nbRes = segments[seg].residues.Count;
                 if ( nbRes < 2 )
