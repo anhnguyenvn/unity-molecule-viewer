@@ -488,7 +488,7 @@ namespace UMol
                 var longName = segmentData.name;
                 var shortName = UnityMolResidue.FromResidue3To1(longName);
                 
-                highlighted.SetInfo(new HighlightedInfo()
+                highlighted.SetInfo(new AminoAcidShortInfo()
                 {
                     Order = segmentData.id,
                     ShortName = shortName,

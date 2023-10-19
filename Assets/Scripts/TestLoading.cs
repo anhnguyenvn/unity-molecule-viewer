@@ -8,7 +8,7 @@ public class TestLoading : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        APIPython.load(@"C:\Users\anh\Downloads\AF-O15552-F1-model_v4.cif");
+        APIPython.load(@"D:\PDB\AF-F6PNR2-F1-model_v4.cif");
         
     }
 }

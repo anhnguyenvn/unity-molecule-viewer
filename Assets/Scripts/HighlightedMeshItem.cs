@@ -6,25 +6,32 @@ using UnityEngine;
 
 public class HighlightedMeshItem : MonoBehaviour
 {
-    public static event Action<HighlightedInfo, bool> OnHighlightedInfo;
-    public static event Action<List<HighlightedInfo>> OnHighlightedInfoLoaded;
+    public static event Action<AminoAcidShortInfo, bool> OnMeshHighlighted;
+    public static event Action<List<AminoAcidShortInfo>> OnAminoAcidDatalLoaded;
     private static readonly List<HighlightedMeshItem> AllItems = new List<HighlightedMeshItem>();
     
-    public HighlightedInfo _info;
+    public AminoAcidShortInfo _info;
 
     private HighlightManager _highlightManager;
 
-    public void SetInfo(HighlightedInfo info)
+    public void SetInfo(AminoAcidShortInfo info)
     {
         _info = info;
     }
 
-    public void SetHighlighted(int highlightItemOrder)
+    public static void SetHighlighted(int order, bool isHighlight)
     {
         if ( AllItems == null ) return;
-        var highlightedItem = AllItems.FirstOrDefault(e => e != null && e._info.Order == highlightItemOrder);
+        var highlightedItem = AllItems.FirstOrDefault(e => e != null && e._info.Order == order);
         if ( highlightedItem == null ) return;
-        if ( _highlightManager != null ) _highlightManager.ToggleObject(highlightedItem.transform);
+        if (HighlightManager.instance != null)
+        {
+            if (isHighlight)
+                HighlightManager.instance.ToggleObject(highlightedItem.transform);
+            else
+                HighlightManager.instance.UnselectObject(highlightedItem.transform);
+        }
+
     }
 
     private void Awake()
@@ -50,9 +57,9 @@ public class HighlightedMeshItem : MonoBehaviour
 
     private bool HighlightEnded(GameObject unhighlighted)
     {
-        if ( unhighlighted != null && unhighlighted.GetInstanceID() == this.GetInstanceID() )
+        if ( unhighlighted != null && unhighlighted.GetInstanceID() == gameObject.GetInstanceID() )
         {
-            OnHighlightedInfo?.Invoke(_info, false);
+            OnMeshHighlighted?.Invoke(_info, false);
         }
         
         return true;
@@ -60,9 +67,9 @@ public class HighlightedMeshItem : MonoBehaviour
 
     private bool HighlightStarted(GameObject highlighted)
     {
-        if ( highlighted != null && highlighted.GetInstanceID() == this.GetInstanceID() )
+        if ( highlighted != null && highlighted.GetInstanceID() == gameObject.GetInstanceID() )
         {
-            OnHighlightedInfo?.Invoke(_info, true);
+            OnMeshHighlighted?.Invoke(_info, true);
         }
 
         return true;
@@ -73,12 +80,12 @@ public class HighlightedMeshItem : MonoBehaviour
     {
         if ( AllItems == null ) return;
         var allInfos = AllItems.Select(e => e._info);
-        OnHighlightedInfoLoaded?.Invoke(allInfos.ToList());
+        OnAminoAcidDatalLoaded?.Invoke(allInfos.ToList());
     }
 }
 
 [Serializable]
-public struct HighlightedInfo
+public struct AminoAcidShortInfo
 {
     public int Order;
     public string ShortName;
