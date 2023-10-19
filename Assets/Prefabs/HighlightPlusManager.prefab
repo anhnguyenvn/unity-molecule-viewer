@@ -223,7 +223,7 @@ MonoBehaviour:
   _highlightOnHover: 1
   layerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1847
   raycastCamera: {fileID: 0}
   raycastSource: 0
   minDistance: 0
