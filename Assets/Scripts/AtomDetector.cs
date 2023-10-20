@@ -57,9 +57,6 @@ public class AtomDetector : MonoBehaviour
         {
             _nearestItem = null;
         }
-
-        if (_nearestItem != null)
-            HighlightedMeshItem.SetHighlighted(_nearestItem._info.Order, true);
     }
 
     private void OnDrawGizmos()
