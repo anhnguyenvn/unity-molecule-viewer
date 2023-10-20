@@ -9,7 +9,7 @@ public class SimpleViewer : MonoBehaviour
 {
     private Camera _currentCamera;
 
-    private GameObject _proteinGameObject;
+    // private GameObject _proteinGameObject;
 
     [Header("Camera")]
     [SerializeField] private float moveForwardSpeed = 2f;
@@ -19,30 +19,13 @@ public class SimpleViewer : MonoBehaviour
     
     [Header("Protein")] [SerializeField]
     private float _rotateSpeed = 50f;
-
-    [SerializeField] private Transform _placeHolder;
-    
     
     
     private void Awake()
     {
         _currentCamera = GetComponent<Camera>();
     }
-
-    private IEnumerator Start()
-    {
-        while (_proteinGameObject == null)
-        {
-            yield return new WaitForSeconds(0.25f);
-            _proteinGameObject = UnityMolMain.getRepresentationParent();
-        }
-
-        _proteinGameObject.transform.position = _placeHolder.position;
-        _proteinGameObject.transform.rotation = _placeHolder.rotation;
-        _proteinGameObject.transform.localScale = _placeHolder.localScale;
-        
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -58,13 +41,13 @@ public class SimpleViewer : MonoBehaviour
             _currentCamera.transform.rotation = Quaternion.Euler(newRot.eulerAngles.x, newRot.eulerAngles.y, 0f);
         }
 
-        if ( Input.GetMouseButton(0) && _proteinGameObject != null )
-        {
-            var tiltDelta = Input.GetAxis("Mouse Y")*Time.deltaTime*_rotateSpeed;
-            var yawDelta = -Input.GetAxis("Mouse X")*Time.deltaTime*_rotateSpeed;
-            var newRot = _proteinGameObject.transform.rotation*Quaternion.Euler(tiltDelta, yawDelta, 0f);
-            _proteinGameObject.transform.Rotate(_currentCamera.transform.right, tiltDelta, Space.World);
-            _proteinGameObject.transform.Rotate(Vector3.up, yawDelta, Space.World);
-        }
+        // if ( Input.GetMouseButton(0) && _proteinGameObject != null )
+        // {
+        //     var tiltDelta = Input.GetAxis("Mouse Y")*Time.deltaTime*_rotateSpeed;
+        //     var yawDelta = -Input.GetAxis("Mouse X")*Time.deltaTime*_rotateSpeed;
+        //     var newRot = _proteinGameObject.transform.rotation*Quaternion.Euler(tiltDelta, yawDelta, 0f);
+        //     _proteinGameObject.transform.Rotate(_currentCamera.transform.right, tiltDelta, Space.World);
+        //     _proteinGameObject.transform.Rotate(Vector3.up, yawDelta, Space.World);
+        // }
     }
 }
