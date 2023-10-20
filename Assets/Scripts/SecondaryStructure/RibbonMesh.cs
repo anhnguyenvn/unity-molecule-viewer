@@ -214,7 +214,8 @@ namespace UMol
                     }
                 }
 
-                createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref vertices, ref triangles,
+                var residue_ = residues[i];
+                createSegmentMesh(residue_, i, n, pp1, pp2, pp3, pp4, ref vertices, ref triangles,
                     ref colors, ref residueToVert, ref verticesDict, isTraj);
 
                 if ( segmentsMeshData != null ) // anhnguyen: add this one to get the segment data out
@@ -224,7 +225,7 @@ namespace UMol
                     segmentTriangles.Clear();
                     segmentColors.Clear();
 
-                    createSegmentMesh(i, n, pp1, pp2, pp3, pp4, ref segmentVertices, ref segmentTriangles,
+                    createSegmentMesh(residue_, i, n, pp1, pp2, pp3, pp4, ref segmentVertices, ref segmentTriangles,
                         ref segmentColors,
                         ref dummyResidueToVert, // anhnguyen dummy
                         ref dmmyVerticesDict, // anhnguyen dummy
@@ -458,6 +459,28 @@ namespace UMol
             }
         }
 
+        private static Color32 ColorByConfidence(float confidence)
+        {
+            if ( confidence >= 90f )
+            {
+                return new Color32(0, 83, 241, 255);
+            }
+            else if ( confidence >= 70f && confidence < 90 )
+            {
+                return new Color32(101, 203, 243, 255);
+            }
+            else if ( confidence >= 50f && confidence < 70 )
+            {
+                return new Color32(255, 219, 19, 255);
+            }
+            else if ( confidence < 50 )
+            {
+                return new Color32(255, 125, 69, 255);
+            }
+
+            return new Color32(255, 255, 255, 255);
+        }
+
         static void segmentColors(PeptidePlane pp, ref Color32 c1, ref Color32 c2)
         {
             UnityMolResidue.secondaryStructureType type1 = 0;
@@ -534,7 +557,8 @@ namespace UMol
         // static GameObject RootProtein
 
 
-        static void createSegmentMesh(int i, int n, PeptidePlane pp1, PeptidePlane pp2, PeptidePlane pp3,
+        static void createSegmentMesh(UnityMolResidue unityMolResidue, int i, int n, PeptidePlane pp1, PeptidePlane pp2,
+            PeptidePlane pp3,
             PeptidePlane pp4,
             ref List<Vector3> verticesList, ref List<int> trianglesList, ref List<Color32> colorsList,
             ref Dictionary<UnityMolResidue, List<int>> residueToVert, ref Dictionary<Vector3, int> verticesDict,
@@ -548,7 +572,10 @@ namespace UMol
 
             Color32 c1 = Color.black;
             Color32 c2 = Color.black;
-            segmentColors(pp2, ref c1, ref c2);
+
+            c1 = ColorByConfidence(unityMolResidue.allAtoms[0].bfactor);
+            c2 = ColorByConfidence(unityMolResidue.allAtoms[0].bfactor);
+            // segmentColors(pp2, ref c1, ref c2);
 
             Vector3[] profile1 = null;
             Vector3[] profile2 = null;
