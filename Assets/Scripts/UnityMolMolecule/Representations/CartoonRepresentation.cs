@@ -477,6 +477,12 @@ namespace UMol
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
             #endregion
+
+
+            var proteinInfo = new ProteinInfo();
+            var proteinName = seg.residues[0].chain.model.structure.uniqueName;
+            proteinInfo._aminoAcids = new List<AminoAcidShortInfo>();
+            proteinInfo._proteinName = proteinName;
             
             for (int i = 0; i < meshSegmentsData.Count; i++)
             {
@@ -487,13 +493,19 @@ namespace UMol
 
                 var longName = segmentData.name;
                 var shortName = UnityMolResidue.FromResidue3To1(longName);
-                
-                highlighted.SetInfo(new AminoAcidShortInfo()
+
+                // Create new info and add to the manager data
+                var aminoAcidShortInfo = new AminoAcidShortInfo()
                 {
+                    ProteinName = proteinName,
                     Order = segmentData.id,
                     ShortName = shortName,
                     LongName = longName
-                });
+                };
+                proteinInfo._aminoAcids.Add(aminoAcidShortInfo);
+                
+                
+                highlighted.SetInfo(aminoAcidShortInfo);
                 
                 segmentGo.isStatic = true;
                 
@@ -583,7 +595,7 @@ namespace UMol
             }
             
             // signal that all meshes are created with info
-            HighlightedMeshItem.AllHighlightedInfoLoaded();
+            ProteinObjectManager.Instance.AddProtein(proteinInfo._proteinName, proteinInfo);
         }
 
         void createUnityMesh(Segment seg, Transform parent, string name, MeshData meshD, List<MeshData> meshSegmentsData, Material ribbonMat = null)

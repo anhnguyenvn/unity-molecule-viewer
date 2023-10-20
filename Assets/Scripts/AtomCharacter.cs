@@ -9,23 +9,24 @@ public class AtomCharacter : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] private int _order;
     [SerializeField] private TMP_Text _textProtein;
     [SerializeField] private GameObject _backgroundImage;
-
+    private string _proteinName;
     public void OnPointerEnter(PointerEventData eventData)
     {
         ToggleBackground(true);
-        HighlightedMeshItem.SetHighlighted(_order, true);
+        ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         ToggleBackground(false);
-        HighlightedMeshItem.SetHighlighted(_order, false);
+        ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, false);
     }
 
-    public void SetInfo(int order, string value)
+    public void SetInfo(AminoAcidShortInfo info)
     {
-        _order = order;
-        _textProtein.text = value;
+        _order = info.Order;
+        _proteinName = info.ProteinName;
+        _textProtein.text = info.ShortName;
     }
 
     public void ToggleBackground(bool value)
