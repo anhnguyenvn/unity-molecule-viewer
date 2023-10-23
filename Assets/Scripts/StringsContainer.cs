@@ -13,14 +13,12 @@ public class StringsContainer : MonoBehaviour
     readonly Dictionary<string, ProteinInfo> _listProteinData = new Dictionary<string, ProteinInfo>();
     
 
-    private void DestroyAtomChar()
+    private void ResetAtomChars()
     {
         foreach (var atomChar in _currentAminoAcidCharacters)
         {
-            if (atomChar != null && atomChar.gameObject != null)
-            {
-                Destroy(atomChar.gameObject);
-            }
+            if (atomChar)
+                ObjectPooler.Instance.ResetAtomToPool(atomChar);
         }
         
         _currentAminoAcidCharacters.Clear();
@@ -47,7 +45,7 @@ public class StringsContainer : MonoBehaviour
 
         if ( _listProteinData.ContainsKey(_currentProtein) )
         {
-            DestroyAtomChar();
+            ResetAtomChars();
             PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
         }
     }
@@ -81,7 +79,8 @@ public class StringsContainer : MonoBehaviour
         _currentAminoAcidCharacters?.Add(new AtomCharacter());
         foreach (var atom in atoms)
         {
-            AtomCharacter atomCharacter = Instantiate(_atomCharacterPrefab, transform);
+            AtomCharacter atomCharacter = ObjectPooler.Instance.GetAtomFromPool(atom.Order-1); // Instantiate(_atomCharacterPrefab, transform);
+            atomCharacter.transform.SetParent(transform);
             atomCharacter.SetInfo(atom);
             _currentAminoAcidCharacters.Add(atomCharacter);
         }
