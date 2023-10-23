@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using TMPro;
+using System;
 
 public class AtomDetector : MonoBehaviour
 {
@@ -10,8 +9,11 @@ public class AtomDetector : MonoBehaviour
 
     private List<HighlightedMeshItem> _meshesInRange = new List<HighlightedMeshItem>();
     private HighlightedMeshItem _nearestItem;
+    private HighlightedMeshItem NearestItem => _nearestItem;
     private bool _itemInRange = false;
     private RaycastHit _raycastHit;
+
+    public static Action<string> OnChangedNearestItem;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -37,6 +39,7 @@ public class AtomDetector : MonoBehaviour
             {
                 _nearestItem = null;
                 _itemInRange = false;
+                OnChangedNearestItem?.Invoke(string.Empty);
             }
         }
     }
@@ -52,11 +55,13 @@ public class AtomDetector : MonoBehaviour
             if (_raycastHit.transform.TryGetComponent<HighlightedMeshItem>(out var meshItem))
             {
                 _nearestItem = meshItem;
+                OnChangedNearestItem?.Invoke("something");
             }
         }
         else
         {
             _nearestItem = null;
+            OnChangedNearestItem?.Invoke(string.Empty);
         }
     }
 }
