@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using TMPro;
 
 public class AtomDetector : MonoBehaviour
 {
@@ -57,11 +58,5 @@ public class AtomDetector : MonoBehaviour
         {
             _nearestItem = null;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
     }
 }
