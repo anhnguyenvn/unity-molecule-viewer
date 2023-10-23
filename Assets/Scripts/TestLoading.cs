@@ -15,6 +15,7 @@ public class TestLoading : MonoBehaviour
         var listFiles = Directory.GetFiles(
             $"{Application.streamingAssetsPath}{Path.DirectorySeparatorChar}CIFData{Path.DirectorySeparatorChar}",
             "*.cif");
+        
         yield return new WaitForEndOfFrame();
         ProteinObjectManager.Instance.LoadProteins(new List<string>(listFiles), _listPlaceHolders);
     }

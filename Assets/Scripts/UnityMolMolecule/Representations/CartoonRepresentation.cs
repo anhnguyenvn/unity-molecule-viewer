@@ -609,6 +609,7 @@ namespace UMol
             
             // signal that all meshes are created with info
             ProteinObjectManager.Instance.AddProtein(proteinInfo._proteinName, proteinInfo);
+            ProteinObjectManager.Instance.AddProteinGameObject(proteinInfo._proteinName, go);
         }
 
         void createUnityMesh(Segment seg, Transform parent, string name, MeshData meshD, List<MeshData> meshSegmentsData, Material ribbonMat = null)

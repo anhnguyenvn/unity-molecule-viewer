@@ -1,25 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 
 public class AtomDetector : MonoBehaviour
 {
-    [SerializeField] private float _maxRayDistance = 1.0f;
+    [SerializeField] private float _maxRayDistance = 2.0f;
 
     private List<HighlightedMeshItem> _meshesInRange = new List<HighlightedMeshItem>();
     private HighlightedMeshItem _nearestItem;
-    private HighlightedMeshItem NearestItem => _nearestItem;
+    public HighlightedMeshItem NearestItem => _nearestItem;
     private bool _itemInRange = false;
     private RaycastHit _raycastHit;
 
     public static Action<string> OnChangedNearestItem;
 
+    private bool hasJustFoundAtom = false;
+    private bool hasJustLostAtom = false;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<HighlightedMeshItem>(out var meshItem))
+        if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
         {
-            if (!_meshesInRange.Contains(meshItem))
+            if ( !_meshesInRange.Contains(meshItem) )
             {
                 _itemInRange = true;
                 _meshesInRange.Add(meshItem);
@@ -29,13 +31,14 @@ public class AtomDetector : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<HighlightedMeshItem>(out var meshItem))
+        if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
         {
-            if (_meshesInRange.Contains(meshItem))
+            if ( _meshesInRange.Contains(meshItem) )
             {
                 _meshesInRange.Remove(meshItem);
             }
-            if (_meshesInRange.Count == 0)
+
+            if ( _meshesInRange.Count == 0 )
             {
                 _nearestItem = null;
                 _itemInRange = false;
@@ -44,24 +47,39 @@ public class AtomDetector : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnDrawGizmos()
     {
-        if (!_itemInRange)
-            return;
+        Gizmos.DrawSphere(_raycastHit.point, 0.5f);
+    }
 
-
-        if (Physics.Raycast(transform.position, transform.forward, out _raycastHit, _maxRayDistance))
+    private void FixedUpdate()
+    {
+        var raycasted =
+            Physics.SphereCast(transform.position, 0.5f, transform.forward, out _raycastHit, _maxRayDistance);
+        if ( raycasted && _raycastHit.transform.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
         {
-            if (_raycastHit.transform.TryGetComponent<HighlightedMeshItem>(out var meshItem))
+            _nearestItem = meshItem;
+            if ( !hasJustFoundAtom )
             {
-                _nearestItem = meshItem;
-                OnChangedNearestItem?.Invoke("something");
+                hasJustFoundAtom = true;
+                OnChangedNearestItem?.Invoke(_nearestItem._info.ProteinName);
+                Debug.Log($"<color=yellow>FOUND {_nearestItem._info.ProteinName} </color>");
             }
+
+            hasJustLostAtom = false;
         }
         else
         {
             _nearestItem = null;
-            OnChangedNearestItem?.Invoke(string.Empty);
+
+            if ( !hasJustLostAtom )
+            {
+                hasJustLostAtom = true;
+                OnChangedNearestItem?.Invoke(string.Empty);
+                Debug.Log($"<color=yellow>NO FOCUSS </color>");
+            }
+
+            hasJustFoundAtom = false;
         }
     }
 }

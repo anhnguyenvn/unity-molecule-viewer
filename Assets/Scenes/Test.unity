@@ -1085,7 +1085,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1129e7d1ffeced842923bda3a3c92e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxRayDistance: 1.5
+  _maxRayDistance: 4
 --- !u!54 &2070740113
 Rigidbody:
   m_ObjectHideFlags: 0

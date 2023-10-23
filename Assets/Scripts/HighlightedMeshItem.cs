@@ -91,9 +91,9 @@ public struct AminoAcidShortInfo
     {
         return
             $"{Description}\n" 
-            + $"{EntryId}|{ShortName}|{LongName} {Order}\n" + $"UNP {DBAccession} {Order} {TypeChar}\n" + $"pLDDT Score {plddTScore} ({StringByConfidence(plddTScore)})";
-        
-            
+            + $"{EntryId}|{ShortName}|{LongName} {Order}\n" 
+            + $"UNP {DBAccession} {Order} {TypeChar}\n" 
+            + $"pLDDT Score {plddTScore} ({StringByConfidence(plddTScore)})";
     }
     
     private static string StringByConfidence(float confidence)
@@ -116,5 +116,12 @@ public struct AminoAcidShortInfo
         }
 
         return string.Empty;
+    }
+
+    public override bool Equals(object obj)
+    {
+        var otherAcid = (AminoAcidShortInfo)obj;
+        return otherAcid.ProteinName == this.ProteinName &&
+               otherAcid.Order == this.Order;
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 
 public class PanelDetailsInfo : MonoBehaviour
@@ -9,12 +7,17 @@ public class PanelDetailsInfo : MonoBehaviour
 
     private void OnEnable()
     {
-        AtomDetector.OnChangedNearestItem += SetText;
+        ProteinObjectManager.Instance.OnAminoAcidMeshSelected += PopulateDetailsInfo;
+    }
+
+    private void PopulateDetailsInfo(object sender, AminoAcidMeshSelection e)
+    {
+        SetText(e._info.ToString());
     }
 
     private void OnDisable()
     {
-        AtomDetector.OnChangedNearestItem -= SetText;
+        ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= PopulateDetailsInfo;
     }
 
     public void SetText(string text)
