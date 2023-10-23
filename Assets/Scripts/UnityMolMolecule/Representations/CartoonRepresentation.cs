@@ -481,6 +481,9 @@ namespace UMol
 
             var proteinInfo = new ProteinInfo();
             var proteinName = seg.residues[0].chain.model.structure.uniqueName;
+            var descrition = seg.residues[0].chain.model.structure.description;
+            var entryId = seg.residues[0].chain.model.structure.entryId;
+            var dbAccession = seg.residues[0].chain.model.structure.dbAccession;
             proteinInfo._aminoAcids = new List<AminoAcidShortInfo>();
             proteinInfo._proteinName = proteinName;
             
@@ -498,10 +501,20 @@ namespace UMol
                 var aminoAcidShortInfo = new AminoAcidShortInfo()
                 {
                     ProteinName = proteinName,
+                    
+                    Description = descrition,
+                    EntryId = entryId,
+                    
                     Order = segmentData.id,
                     ShortName = shortName,
-                    LongName = longName
+                    LongName = longName,
+                    
+                    DBAccession = dbAccession,
+                    
+                    TypeChar = segmentData.chain.name,
+                    plddTScore = segmentData.allAtoms[0].bfactor
                 };
+                
                 proteinInfo._aminoAcids.Add(aminoAcidShortInfo);
                 
                 

@@ -59,6 +59,13 @@ namespace UMol {
 /// Part of the SMCRA data structure, UnityMolStructure stores the models of the structure
 /// </summary>
 public class UnityMolStructure {
+	
+	// anhnguyen: add more info
+	public string description;
+
+	public string entryId;
+
+	public string dbAccession;
 
 	/// <summary>
 	/// Store all the models of the structure

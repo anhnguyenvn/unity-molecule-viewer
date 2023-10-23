@@ -210,10 +210,18 @@ namespace UMol
             int lastModelId = Int32.MinValue;
 
 
+            // anhnguyen
+            string proteinName = string.Empty;
+            string entryId = string.Empty;
+            string dbAccession = string.Empty;
+
             using (sr)
             {
                 // Don't use garbage collection but free temp memory after reading the pdb file
                 string keyField = "_atom_site.";
+                string keyFieldEntity = "_entity.";
+                string keyEntryEntity = "_entry.";
+                string keyDatabaseAccessEntity = "_struct_ref.";
                 string keyFieldHelix = "_struct_conf.";
                 string keyFieldSheet = "_struct_sheet_range.";
                 string keyFieldConnec = "_struct_conn.";
@@ -301,11 +309,68 @@ namespace UMol
                     {
                         currentLine = splits[0];
                         string trimmedLine = currentLine.TrimEnd();
-
+                        
+                        //Get the order of the fields
+                        if ( QuickStartWith(trimmedLine, keyFieldEntity) )
+                        {
+                            string n = trimmedLine.Substring(trimmedLine.IndexOf(keyFieldEntity) + keyFieldEntity.Length);
+                            if ( n.Contains("pdbx_description") )
+                            {
+                                var lines = currentLine.Split(new[] {"   " },
+                                    System.StringSplitOptions.RemoveEmptyEntries);
+                            
+                                if (lines.Length > 1)
+                                {
+                                    proteinName = lines[1].Replace("\"", string.Empty);
+                                    Debug.Log($"<color=blue>{proteinName}</color>");
+                                    
+                                    
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                        if ( QuickStartWith(trimmedLine, keyEntryEntity) )
+                        {
+                            string n = trimmedLine.Substring(trimmedLine.IndexOf(keyEntryEntity) + keyEntryEntity.Length);
+                            if ( n.Contains("id") )
+                            {
+                                var lines = currentLine.Split(new[] {" " },
+                                    System.StringSplitOptions.RemoveEmptyEntries);
+                            
+                                if (lines.Length > 1)
+                                {
+                                    entryId = lines[1];
+                                    Debug.Log($"<color=blue>{entryId}</color>");
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                        if ( QuickStartWith(trimmedLine, keyDatabaseAccessEntity) )
+                        {
+                            string n = trimmedLine.Substring(trimmedLine.IndexOf(keyDatabaseAccessEntity) + keyDatabaseAccessEntity.Length);
+                            if ( n.Contains("pdbx_db_accession") )
+                            {
+                                var lines = currentLine.Split(new[] {" " },
+                                    System.StringSplitOptions.RemoveEmptyEntries);
+                            
+                                if (lines.Length > 1)
+                                {
+                                    dbAccession = lines[1].Trim();
+                                    Debug.Log($"<color=blue>{dbAccession}</color>");
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                        
+                        
                         //Get the order of the fields
                         if ( QuickStartWith(trimmedLine, keyField) )
                         {
                             string n = trimmedLine.Substring(trimmedLine.IndexOf(keyField) + keyField.Length);
+                            
                             atomKeyId[n] = cptAtomKey;
                             cptAtomKey++;
                             keyFieldStarted = true;
@@ -391,6 +456,9 @@ namespace UMol
                             string atomName = splitAtomLine[atomKeyId["auth_atom_id"]].Replace("\"", "");
                             string atomChain = splitAtomLine[atomKeyId["auth_asym_id"]];
                             int resNum = int.Parse(splitAtomLine[atomKeyId["auth_seq_id"]]);
+                            
+                            // var normalName = splitAtomLine[atomKeyId["pdbx_description"]];
+                            // Debug.Log($"<color=yellow>DES:    {normalName}</color>");
 
                             // This is actually weird: the PDBx/mmCIF->PDB conversion page says B_iso_or_equiv_esd
                             // but the dictionary says this is found in only 0.008% of all entries ...
@@ -971,6 +1039,11 @@ namespace UMol
             {
                 newStruct = new UnityMolStructure(models, this.fileNameWithoutExtension);
             }
+            
+            //anhnguyen add protein name
+            if ( !string.IsNullOrEmpty(proteinName) ) newStruct.description = proteinName;
+            if ( !string.IsNullOrEmpty(entryId) ) newStruct.entryId = entryId;
+            if ( !string.IsNullOrEmpty(dbAccession) ) newStruct.dbAccession = dbAccession;
 
             identifyStructureMolecularType(newStruct);
             if ( newStruct.structureType != UnityMolStructure.MolecularType.standard )

@@ -63,6 +63,8 @@ public class HighlightedMeshItem : MonoBehaviour
         {
             ProteinObjectManager.Instance.RaiseAminoMeshSelected(new AminoAcidMeshSelection(_info.ProteinName, _info,
                 true));
+
+            Debug.Log($"<color=green>\t{_info}</color>");
         }
 
         return true;
@@ -73,7 +75,46 @@ public class HighlightedMeshItem : MonoBehaviour
 public struct AminoAcidShortInfo
 {
     public string ProteinName;
+
+    public string Description;
+    public string EntryId;
+    
     public int Order;
     public string ShortName;
     public string LongName;
+    public string TypeChar;
+
+    public string DBAccession;
+    public float plddTScore;
+
+    public override string ToString()
+    {
+        return
+            $"{Description}\n" 
+            + $"{EntryId}|{ShortName}|{LongName} {Order}\n" + $"UNP {DBAccession} {Order} {TypeChar}\n" + $"pLDDT Score {plddTScore} ({StringByConfidence(plddTScore)})";
+        
+            
+    }
+    
+    private static string StringByConfidence(float confidence)
+    {
+        if ( confidence >= 90f )
+        {
+            return "Very high";
+        }
+        else if ( confidence >= 70f && confidence < 90 )
+        {
+            return "Confident";
+        }
+        else if ( confidence >= 50f && confidence < 70 )
+        {
+            return "Low";
+        }
+        else if ( confidence < 50 )
+        {
+            return "Very low";
+        }
+
+        return string.Empty;
+    }
 }
