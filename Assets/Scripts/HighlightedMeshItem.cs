@@ -64,7 +64,7 @@ public class HighlightedMeshItem : MonoBehaviour
             ProteinObjectManager.Instance.RaiseAminoMeshSelected(new AminoAcidMeshSelection(_info.ProteinName, _info,
                 true));
 
-            Debug.Log($"<color=green>\t{_info}</color>");
+            // Debug.Log($"<color=green>\t{_info}</color>");
         }
 
         return true;

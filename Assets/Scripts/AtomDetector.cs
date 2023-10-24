@@ -5,6 +5,8 @@ using System;
 public class AtomDetector : MonoBehaviour
 {
     [SerializeField] private float _maxRayDistance = 2.0f;
+    [SerializeField] private float _sphereCastRadius = 1f;
+    
 
     private List<HighlightedMeshItem> _meshesInRange = new List<HighlightedMeshItem>();
     private HighlightedMeshItem _nearestItem;
@@ -49,13 +51,13 @@ public class AtomDetector : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(_raycastHit.point, 0.5f);
+        Gizmos.DrawSphere(_raycastHit.point, _sphereCastRadius);
     }
 
     private void FixedUpdate()
     {
         var raycasted =
-            Physics.SphereCast(transform.position, 0.5f, transform.forward, out _raycastHit, _maxRayDistance);
+            Physics.SphereCast(transform.position, _sphereCastRadius, transform.forward, out _raycastHit, _maxRayDistance);
         if ( raycasted && _raycastHit.transform.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
         {
             _nearestItem = meshItem;

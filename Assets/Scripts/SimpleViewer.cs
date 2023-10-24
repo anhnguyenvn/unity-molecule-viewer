@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UMol;
+﻿
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(CharacterController))]
 public class SimpleViewer : MonoBehaviour
 {
     private Camera _currentCamera;
@@ -20,6 +18,9 @@ public class SimpleViewer : MonoBehaviour
     [SerializeField] private float yawSpeed = 2f;
     [SerializeField] private float tiltSpeed = 2f;
 
+    [SerializeField] private float boostSpeedFactor = 2f;
+    
+
     [Header("Protein")] [SerializeField] private float _rotateSpeed = 50f;
     [SerializeField] private bool _useCharacterController = false;
 
@@ -27,13 +28,22 @@ public class SimpleViewer : MonoBehaviour
     
     [SerializeField] private Bounds _roomBound;
 
-
+    private float currentBoost = 1f; 
+    private bool _controlable = false;
+    
     private void Awake()
     {
         _currentCamera = GetComponent<Camera>();
         _character = GetComponent<CharacterController>();
         _roomBound = _roomBox.bounds;
         ProteinObjectManager.Instance.OnProteinsFocusObjectChanged += SetCurrentFocusObject;
+        ProteinObjectManager.Instance.OnAllProteinDataLoaded += ActiveControl;
+    }
+
+    private async void ActiveControl(object sender, ProteinDataLoadArg e)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2.5f));
+        _controlable = true;
     }
 
     private void SetCurrentFocusObject(object sender, GameObject currentFocusProtein)
@@ -43,12 +53,15 @@ public class SimpleViewer : MonoBehaviour
 
     private void OnDestroy()
     {
+        if ( ProteinObjectManager.Instance == null ) return;
         ProteinObjectManager.Instance.OnProteinsFocusObjectChanged -= SetCurrentFocusObject;
+        ProteinObjectManager.Instance.OnAllProteinDataLoaded -= ActiveControl;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
+        if (!_controlable) return;
         if ( _currentCamera == null ) return;
         var input2D = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         var up = Input.GetKey(KeyCode.Q) ? 1 : 0;
@@ -60,9 +73,11 @@ public class SimpleViewer : MonoBehaviour
         }
         else
         {
-            var fw = new Vector3(0f, 0f, input2D.y)*Time.deltaTime*moveForwardSpeed;
-            var side = new Vector3(input2D.x, 0f, 0f)*Time.deltaTime*panningSpeed;
-            var updown =  new Vector3(0f, up + down, 0f)*Time.deltaTime*updownSpeed;
+            currentBoost = Input.GetKey(KeyCode.LeftShift) ? boostSpeedFactor : 1f;
+            
+            var fw = new Vector3(0f, 0f, input2D.y)*Time.deltaTime*moveForwardSpeed * currentBoost;
+            var side = new Vector3(input2D.x, 0f, 0f)*Time.deltaTime*panningSpeed * currentBoost;;
+            var updown =  new Vector3(0f, up + down, 0f)*Time.deltaTime*updownSpeed * currentBoost;;
             var newPos = _currentCamera.transform.position + ( _currentCamera.transform.localRotation * (fw + side + updown) );
 
             var clappedpos = newPos;
