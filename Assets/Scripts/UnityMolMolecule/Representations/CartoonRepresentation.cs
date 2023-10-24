@@ -470,8 +470,10 @@ namespace UMol
             }
             
             mf.mesh = m;
-            go.AddComponent<MeshRenderer>().sharedMaterial = ribbonMat;
-            
+            var mr = go.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = ribbonMat;
+            mr.shadowCastingMode = ShadowCastingMode.Off;
+
             go.transform.parent = parent;
             go.transform.localRotation = Quaternion.identity;
             go.transform.localPosition = Vector3.zero;
