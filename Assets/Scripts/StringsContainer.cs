@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,7 +14,11 @@ public class StringsContainer : MonoBehaviour
 
     private string _currentProtein = string.Empty;
     private readonly Dictionary<string, ProteinInfo> _listProteinData = new Dictionary<string, ProteinInfo>();
-    
+
+    private Stack<IEnumerator> listRunningTask = new Stack<IEnumerator>();
+
+    private bool isPopulatingData = false;
+    private IEnumerator currentPopulatingDataTask = null;
     private void OnEnable()
     {
         if ( ProteinObjectManager.Instance == null )
@@ -39,7 +45,20 @@ public class StringsContainer : MonoBehaviour
 
         if ( _listProteinData != null && !string.IsNullOrEmpty(_currentProtein) && _listProteinData.ContainsKey(_currentProtein) )
         {
-             PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
+            var task = PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
+            listRunningTask.Push(task);
+        }
+    }
+
+    private void Update()
+    {
+        if ( isPopulatingData ) return;
+
+        if ( listRunningTask.TryPop(out var latestTask) )
+        {
+            currentPopulatingDataTask = latestTask;
+            StartCoroutine(currentPopulatingDataTask);
+            listRunningTask.Clear();
         }
     }
 
@@ -74,12 +93,13 @@ public class StringsContainer : MonoBehaviour
         ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= MutuallyHighlight;
     }
 
-    private async Task PopulateStrings(List<AminoAcidShortInfo> aminoAcids)
+    private IEnumerator PopulateStrings(List<AminoAcidShortInfo> aminoAcids)
     {
+        isPopulatingData = true;
         // since amino acid order starts from 1, we ignore the first element in the list.
         // _currentAminoAcidCharacters?.Add(new AtomCharacter());
         _currentAminoAcidCharacters?.Clear();
-        if ( aminoAcids == null ) return;
+        if ( aminoAcids == null ) yield break;
 
         for (int i = 0; i < aminoAcids.Count; i++)
         {
@@ -90,10 +110,11 @@ public class StringsContainer : MonoBehaviour
             atomCharacter.SetInfo(acid);
             _currentAminoAcidCharacters?.Add(atomCharacter);
 
-            if ( i%_spawnPerFrame == 0 ) await Task.Yield();
-
+            if ( i%_spawnPerFrame == 0 ) yield return null;
         }
         // turn off other character object if any
         ObjectPooler.Instance.ResetAllAtomToPool(aminoAcids.Count);
+        
+        isPopulatingData = false;
     }
 }
