@@ -15,6 +15,8 @@ public class SimpleViewer : MonoBehaviour
 
     [Header("Camera")] [SerializeField] private float moveForwardSpeed = 2f;
     [SerializeField] private float panningSpeed = 2f;
+    [SerializeField] private float updownSpeed = 2f;
+    
     [SerializeField] private float yawSpeed = 2f;
     [SerializeField] private float tiltSpeed = 2f;
 
@@ -49,6 +51,8 @@ public class SimpleViewer : MonoBehaviour
     {
         if ( _currentCamera == null ) return;
         var input2D = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        var up = Input.GetKey(KeyCode.Q) ? 1 : 0;
+        var down = Input.GetKey(KeyCode.E) ? -1 : 0;
         if ( _character != null && _useCharacterController)
         {
             _character.SimpleMove(new Vector3(0f, 0f, input2D.y)*Time.deltaTime*moveForwardSpeed);
@@ -57,8 +61,9 @@ public class SimpleViewer : MonoBehaviour
         else
         {
             var fw = new Vector3(0f, 0f, input2D.y)*Time.deltaTime*moveForwardSpeed;
-            var side = new Vector3(input2D.x, 0f, 0)*Time.deltaTime*panningSpeed;
-            var newPos = _currentCamera.transform.position + ( _currentCamera.transform.localRotation * (fw + side) );
+            var side = new Vector3(input2D.x, 0f, 0f)*Time.deltaTime*panningSpeed;
+            var updown =  new Vector3(0f, up + down, 0f)*Time.deltaTime*updownSpeed;
+            var newPos = _currentCamera.transform.position + ( _currentCamera.transform.localRotation * (fw + side + updown) );
 
             var clappedpos = newPos;
             if (!_roomBound.Contains(clappedpos))
