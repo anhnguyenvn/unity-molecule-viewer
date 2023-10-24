@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,6 +19,11 @@ public class ObjectPooler : Singleton<ObjectPooler>
     {
         // initial maximum character count based on the longest protein
         if ( ProteinObjectManager.Instance != null ) ProteinObjectManager.Instance.OnAllProteinDataLoaded += Initialize;
+    }
+
+    private void OnDestroy()
+    {
+        if ( ProteinObjectManager.Instance != null ) ProteinObjectManager.Instance.OnAllProteinDataLoaded -= Initialize;
     }
 
     private void Initialize(object sender, ProteinDataLoadArg proteinData)
@@ -59,7 +65,7 @@ public class ObjectPooler : Singleton<ObjectPooler>
         {
             for (int i = fromOrder; i <  _atomCharsPooledObject.Count; i++)
             {
-                _atomCharsPooledObject[i].gameObject.SetActive(false);
+                ResetAtomToPool(_atomCharsPooledObject[i]);
             }   
         }
     }

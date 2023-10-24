@@ -27,7 +27,7 @@ public class SimpleViewer : MonoBehaviour
     }
     
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if ( _currentCamera == null ) return;
         var input2D = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
