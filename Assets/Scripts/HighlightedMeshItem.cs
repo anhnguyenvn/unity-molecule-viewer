@@ -124,4 +124,8 @@ public struct AminoAcidShortInfo
         return otherAcid.ProteinName == this.ProteinName &&
                otherAcid.Order == this.Order;
     }
+
+
+    private static AminoAcidShortInfo _empty;
+    public static AminoAcidShortInfo Emty => _empty;
 }

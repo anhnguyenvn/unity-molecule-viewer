@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class StringsContainer : MonoBehaviour
 {
     [SerializeField] private AtomCharacter _atomCharacterPrefab;
+    [SerializeField] private int _spawnPerFrame = 40;
+    
 
     private readonly List<AtomCharacter> _currentAminoAcidCharacters = new List<AtomCharacter>();
 
@@ -36,7 +39,7 @@ public class StringsContainer : MonoBehaviour
 
         if ( _listProteinData != null && !string.IsNullOrEmpty(_currentProtein) && _listProteinData.ContainsKey(_currentProtein) )
         {
-            PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
+             PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
         }
     }
 
@@ -71,19 +74,24 @@ public class StringsContainer : MonoBehaviour
         ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= MutuallyHighlight;
     }
 
-    private void PopulateStrings(List<AminoAcidShortInfo> aminoAcids)
+    private async Task PopulateStrings(List<AminoAcidShortInfo> aminoAcids)
     {
         // since amino acid order starts from 1, we ignore the first element in the list.
         // _currentAminoAcidCharacters?.Add(new AtomCharacter());
         _currentAminoAcidCharacters?.Clear();
         if ( aminoAcids == null ) return;
-        foreach (var acid in aminoAcids)
+
+        for (int i = 0; i < aminoAcids.Count; i++)
         {
+            var acid = aminoAcids[i];
             if ( ObjectPooler.Instance == null ) continue;
             var atomCharacter = ObjectPooler.Instance.GetAtomFromPool(acid.Order - 1);
             if ( atomCharacter == null ) continue;
             atomCharacter.SetInfo(acid);
             _currentAminoAcidCharacters?.Add(atomCharacter);
+
+            if ( i%_spawnPerFrame == 0 ) await Task.Yield();
+
         }
         // turn off other character object if any
         ObjectPooler.Instance.ResetAllAtomToPool(aminoAcids.Count);

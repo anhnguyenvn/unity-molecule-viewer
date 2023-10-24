@@ -63,6 +63,7 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
     public event EventHandler<AminoAcidCharSelection> OnAminoAcidCharSelected;
     public event EventHandler<ProteinDataLoadArg> OnAllProteinDataLoaded;
     public event EventHandler<Dictionary<string, bool>> OnProteinsFocusStateChanged;
+    public event EventHandler<GameObject> OnProteinsFocusObjectChanged;
 
     private readonly Dictionary<string, bool> _proteinFocusedStates = new Dictionary<string, bool>();
     private readonly Dictionary<string, ProteinInfo> _proteinInfos = new Dictionary<string, ProteinInfo>();
@@ -129,6 +130,7 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
         }
 
         OnProteinsFocusStateChanged?.Invoke(this, _proteinFocusedStates);
+        OnProteinsFocusObjectChanged?.Invoke(this, _proteinGameObjects[proteinName]);
     }
 
     private void HighlightProtein(string proteinName)
@@ -158,6 +160,7 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
         }
 
         OnProteinsFocusStateChanged?.Invoke(this, _proteinFocusedStates);
+        OnProteinsFocusStateChanged?.Invoke(this, null);
     }
 
     public bool AddProteinGameObject(string proteinName, GameObject proteinGameObject)
