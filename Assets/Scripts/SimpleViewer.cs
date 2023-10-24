@@ -37,7 +37,7 @@ public class SimpleViewer : MonoBehaviour
         {
             var tiltDelta = Input.GetAxis("Mouse Y")*Time.deltaTime*tiltSpeed;
             var yawDelta = Input.GetAxis("Mouse X")*Time.deltaTime*yawSpeed;
-            var newRot = _currentCamera.transform.rotation*Quaternion.Euler(tiltDelta, yawDelta, 0f);
+            var newRot = _currentCamera.transform.rotation*Quaternion.Euler(-tiltDelta, yawDelta, 0f);
             _currentCamera.transform.rotation = Quaternion.Euler(newRot.eulerAngles.x, newRot.eulerAngles.y, 0f);
         }
 

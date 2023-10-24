@@ -1,93 +1,91 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class StringsContainer : MonoBehaviour
 {
     [SerializeField] private AtomCharacter _atomCharacterPrefab;
 
-    private List<AtomCharacter> _currentAminoAcidCharacters = new List<AtomCharacter>();
+    private readonly List<AtomCharacter> _currentAminoAcidCharacters = new List<AtomCharacter>();
 
-    private string _currentProtein = String.Empty;
-    readonly Dictionary<string, ProteinInfo> _listProteinData = new Dictionary<string, ProteinInfo>();
+    private string _currentProtein = string.Empty;
+    private readonly Dictionary<string, ProteinInfo> _listProteinData = new Dictionary<string, ProteinInfo>();
     
-
-    private void ResetAtomChars()
-    {
-        foreach (var atomChar in _currentAminoAcidCharacters)
-        {
-            if (atomChar)
-                ObjectPooler.Instance.ResetAtomToPool(atomChar);
-        }
-        
-        _currentAminoAcidCharacters.Clear();
-    }
-
     private void OnEnable()
     {
-        // HighlightedMeshItem.OnAminoAcidDatalLoaded += PopulateStrings;
-        // HighlightedMeshItem.OnMeshHighlighted += MutuallyHighlight;
-        ProteinObjectManager.Instance.OnProteinDataLoaded += OnProteinDataLoaded;
+        if ( ProteinObjectManager.Instance == null )
+        {
+            Debug.LogError($"{typeof(ProteinObjectManager)} is null");
+            return;
+        }
+        ProteinObjectManager.Instance.OnAllProteinDataLoaded += OnAllProteinDataLoaded;
         ProteinObjectManager.Instance.OnProteinsFocusStateChanged += OnProteinFocusChanged;
-        ProteinObjectManager.Instance.OnAminoAcidMeshSelected += MutuallyHighlightV2;
+        ProteinObjectManager.Instance.OnAminoAcidMeshSelected += MutuallyHighlight;
     }
 
-    private void OnProteinFocusChanged(object sender, Dictionary<string, bool> e)
+    private void OnProteinFocusChanged(object sender, Dictionary<string, bool> focusStates)
     {
-        foreach (var proteinState in e)
+        if ( focusStates == null ) return;
+        
+        foreach (var proteinState in focusStates)
         {
-            if ( proteinState.Value )
+            if (proteinState.Value)
             {
                 _currentProtein = proteinState.Key;
             }
         }
 
-        if ( _listProteinData.ContainsKey(_currentProtein) )
+        if ( _listProteinData != null && !string.IsNullOrEmpty(_currentProtein) && _listProteinData.ContainsKey(_currentProtein) )
         {
-            ResetAtomChars();
             PopulateStrings(_listProteinData[_currentProtein]._aminoAcids);
         }
     }
 
-    private void OnProteinDataLoaded(object sender, ProteinDataLoadArg e)
+    private void OnAllProteinDataLoaded(object sender, ProteinDataLoadArg proteinData)
     {
-        if ( !_listProteinData.ContainsKey(e._proteinInfo._proteinName) )
+        if ( _listProteinData == null ) return;
+        if ( proteinData == null ) return;
+        foreach (var protein in proteinData._proteinInfos)
         {
-            _listProteinData.Add(e._proteinInfo._proteinName, e._proteinInfo);
+            _listProteinData.TryAdd(protein._proteinName, protein);
         }
     }
 
-    private void MutuallyHighlightV2(object sender, AminoAcidMeshSelection e)
+    private void MutuallyHighlight(object sender, AminoAcidMeshSelection meshSelected)
     {
-        _currentAminoAcidCharacters[e._info.Order].ToggleBackground(e._isSelected);
+        if ( meshSelected == null ) return;
+        if (meshSelected._info.Order < _currentAminoAcidCharacters.Count)
+        {
+            _currentAminoAcidCharacters?[meshSelected._info.Order - 1]?.ToggleBackground(meshSelected._isSelected);
+        }
     }
 
     private void OnDisable()
     {
-        // HighlightedMeshItem.OnAminoAcidDatalLoaded -= PopulateStrings;
-        // HighlightedMeshItem.OnMeshHighlighted -= MutuallyHighlight;
-        
-        ProteinObjectManager.Instance.OnProteinDataLoaded -= OnProteinDataLoaded;
+        if ( ProteinObjectManager.Instance == null )
+        {
+            Debug.LogError($"{typeof(ProteinObjectManager)} is null");
+            return;
+        }
+        ProteinObjectManager.Instance.OnAllProteinDataLoaded -= OnAllProteinDataLoaded;
         ProteinObjectManager.Instance.OnProteinsFocusStateChanged -= OnProteinFocusChanged;
-        ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= MutuallyHighlightV2;
+        ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= MutuallyHighlight;
     }
 
-    private void PopulateStrings(List<AminoAcidShortInfo> atoms)
+    private void PopulateStrings(List<AminoAcidShortInfo> aminoAcids)
     {
         // since amino acid order starts from 1, we ignore the first element in the list.
-        _currentAminoAcidCharacters?.Add(new AtomCharacter());
-        foreach (var atom in atoms)
+        // _currentAminoAcidCharacters?.Add(new AtomCharacter());
+        _currentAminoAcidCharacters?.Clear();
+        if ( aminoAcids == null ) return;
+        foreach (var acid in aminoAcids)
         {
-            AtomCharacter atomCharacter = ObjectPooler.Instance.GetAtomFromPool(atom.Order-1); // Instantiate(_atomCharacterPrefab, transform);
-            atomCharacter.transform.SetParent(transform);
-            atomCharacter.SetInfo(atom);
-            _currentAminoAcidCharacters.Add(atomCharacter);
+            if ( ObjectPooler.Instance == null ) continue;
+            var atomCharacter = ObjectPooler.Instance.GetAtomFromPool(acid.Order - 1);
+            if ( atomCharacter == null ) continue;
+            atomCharacter.SetInfo(acid);
+            _currentAminoAcidCharacters?.Add(atomCharacter);
         }
-    }
-
-    private void MutuallyHighlight(AminoAcidShortInfo atom, bool isHighlighted)
-    {
-        _currentAminoAcidCharacters[atom.Order].ToggleBackground(isHighlighted);
+        // turn off other character object if any
+        ObjectPooler.Instance.ResetAllAtomToPool(aminoAcids.Count);
     }
 }

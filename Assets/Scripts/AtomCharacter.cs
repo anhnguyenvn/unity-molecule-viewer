@@ -7,19 +7,25 @@ using UnityEngine.EventSystems;
 public class AtomCharacter : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private int _order;
-    [SerializeField] private TMP_Text _textProtein;
+    [SerializeField] private TextMeshProUGUI _textProtein;
     [SerializeField] private GameObject _backgroundImage;
     private string _proteinName;
     public void OnPointerEnter(PointerEventData eventData)
     {
         ToggleBackground(true);
-        ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, true);
+        if ( ProteinObjectManager.Instance != null )
+        {
+            ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, true);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         ToggleBackground(false);
-        ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, false);
+        if ( ProteinObjectManager.Instance != null )
+        {
+            ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, false);
+        }
     }
 
     public void SetInfo(AminoAcidShortInfo info)

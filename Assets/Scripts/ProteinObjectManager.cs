@@ -31,11 +31,11 @@ public class AminoAcidMeshSelection : EventArgs
 
 public class ProteinDataLoadArg : EventArgs
 {
-    public ProteinInfo _proteinInfo;
+    public List<ProteinInfo> _proteinInfos;
 
-    public ProteinDataLoadArg(ProteinInfo proteinInfo)
+    public ProteinDataLoadArg(List<ProteinInfo> proteinInfos)
     {
-        _proteinInfo = proteinInfo;
+        _proteinInfos = proteinInfos;
     }
 }
 
@@ -58,9 +58,10 @@ public class AminoAcidCharSelection : EventArgs
 /// </summary>
 public class ProteinObjectManager : Singleton<ProteinObjectManager>
 {
+    // Event whe
     public event EventHandler<AminoAcidMeshSelection> OnAminoAcidMeshSelected;
     public event EventHandler<AminoAcidCharSelection> OnAminoAcidCharSelected;
-    public event EventHandler<ProteinDataLoadArg> OnProteinDataLoaded;
+    public event EventHandler<ProteinDataLoadArg> OnAllProteinDataLoaded;
     public event EventHandler<Dictionary<string, bool>> OnProteinsFocusStateChanged;
 
     private readonly Dictionary<string, bool> _proteinFocusedStates = new Dictionary<string, bool>();
@@ -179,10 +180,15 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
         else
         {
             _proteinInfos.Add(proteinName, proteinInfo);
-            OnProteinDataLoaded?.Invoke(this, new ProteinDataLoadArg(proteinInfo));
         }
 
         return true;
+    }
+
+    private void RaiseAllProteinLoaded()
+    {
+        var allProteins = _proteinInfos.Values.ToList();
+        OnAllProteinDataLoaded?.Invoke(this, new ProteinDataLoadArg(allProteins));
     }
 
     private void OnDrawGizmos()
@@ -261,7 +267,7 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
             while (loadedProteinGo == null)
             {
                 loadedProteinGo = GameObject.Find(proteinGoName);
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForEndOfFrame();
             }
 
             loadedProteinGo.transform.position = placeHodlers[i].position;
@@ -287,6 +293,8 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
 
             yield return new WaitForEndOfFrame();
         }
+        
+        RaiseAllProteinLoaded();
     }
 
 #if UNITY_EDITOR
