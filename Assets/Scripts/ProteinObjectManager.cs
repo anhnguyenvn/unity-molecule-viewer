@@ -82,11 +82,14 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
             go.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             go.transform.localScale = Vector3.one;
         };
+    }
 
+    private void OnEnable()
+    {
         AtomDetector.OnChangedNearestItem += ChangeFocusProtein;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         AtomDetector.OnChangedNearestItem -= ChangeFocusProtein;
     }
