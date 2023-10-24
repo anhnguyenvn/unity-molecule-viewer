@@ -91,7 +91,7 @@ public struct AminoAcidShortInfo
     {
         return
             $"{Description}\n" 
-            + $"{EntryId}|{ShortName}|{LongName} {Order}\n" 
+            + $"{EntryId} | {ShortName} | <b>{LongName} {Order}</b>\n" 
             + $"UNP {DBAccession} {Order} {TypeChar}\n" 
             + $"pLDDT Score {plddTScore} ({StringByConfidence(plddTScore)})";
     }

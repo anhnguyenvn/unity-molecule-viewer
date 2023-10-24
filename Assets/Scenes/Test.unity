@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 216127870}
   - component: {fileID: 216127871}
   - component: {fileID: 216127872}
+  - component: {fileID: 216127873}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -332,9 +333,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveForwardSpeed: 2
   panningSpeed: 2
+  updownSpeed: 2
   yawSpeed: 250
   tiltSpeed: 250
   _rotateSpeed: 220
+  _useCharacterController: 0
+  _roomBox: {fileID: 871797913}
+  _roomBound:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+--- !u!143 &216127873
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 216127866}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &490373068
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,7 +749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.46855342, g: 1, b: 0.89579487, a: 0.8235294}
+  m_Color: {r: 0.46855342, g: 1, b: 0.89579487, a: 0.8627451}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -914,6 +939,12 @@ PrefabInstance:
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d2e72893f156ba4b9f233f8e05c21e3, type: 3}
+--- !u!65 &871797913 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 2465543110711951253, guid: 9fd65da602ae57746b4a20725b9a69d1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1695417617}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &902948947
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,6 +1299,21 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 506746354}
     m_Modifications:
+    - target: {fileID: 312995254505085743, guid: 62228280bed771d4aa81ea00d39c22b9,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 312995254505085743, guid: 62228280bed771d4aa81ea00d39c22b9,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 312995254505085743, guid: 62228280bed771d4aa81ea00d39c22b9,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 312995255112488128, guid: 62228280bed771d4aa81ea00d39c22b9,
         type: 3}
       propertyPath: m_AnchorMax.x
