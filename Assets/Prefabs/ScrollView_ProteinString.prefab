@@ -412,7 +412,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 17, y: 19}
+  m_CellSize: {x: 15.5, y: 17}
   m_Spacing: {x: 1, y: 4}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -430,6 +430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _atomCharacterPrefab: {fileID: 4241307300986106307, guid: 2288ba1d3579c4c4c903f49a80bd5c47,
     type: 3}
+  _spawnPerFrame: 20
 --- !u!114 &2168634035517720401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,8 +627,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 30
-    m_Right: 30
+    m_Left: 26
+    m_Right: 33
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1

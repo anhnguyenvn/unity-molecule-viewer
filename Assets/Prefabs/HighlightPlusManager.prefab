@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -117,7 +118,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   outlineGradientInLocalSpace: 0
-  outlineWidth: 0.4
+  outlineWidth: 0.25
   outlineBlurPasses: 2
   outlineQuality: 1
   outlineEdgeMode: 0
@@ -130,7 +131,7 @@ MonoBehaviour:
   outlineIndependent: 0
   outlineContourStyle: 0
   glow: 1
-  glowWidth: 0.3
+  glowWidth: 0.2
   glowQuality: 1
   glowBlurMethod: 0
   glowDownsampling: 2
