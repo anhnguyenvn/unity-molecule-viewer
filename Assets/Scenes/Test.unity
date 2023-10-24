@@ -276,7 +276,7 @@ MonoBehaviour:
     m_Bits: 1024
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 1
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -332,8 +332,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveForwardSpeed: 2
   panningSpeed: 2
-  yawSpeed: 220
-  tiltSpeed: 220
+  yawSpeed: 250
+  tiltSpeed: 250
   _rotateSpeed: 220
 --- !u!1 &490373068
 GameObject:
@@ -983,11 +983,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_Showroom_01
-      objectReference: {fileID: 0}
-    - target: {fileID: 1679891549368610211, guid: 9fd65da602ae57746b4a20725b9a69d1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1679891549368610220, guid: 9fd65da602ae57746b4a20725b9a69d1,
         type: 3}
