@@ -13,10 +13,6 @@ public class AtomCharacter : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         ToggleBackground(true);
-        if ( _order == 0 )
-        {
-            return;
-        }
         if ( ProteinObjectManager.Instance != null )
         {
             ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, true);
@@ -26,10 +22,6 @@ public class AtomCharacter : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerExit(PointerEventData eventData)
     {
         ToggleBackground(false);
-        if ( _order == 0 )
-        {
-            return;
-        }
         if ( ProteinObjectManager.Instance != null )
         {
             ProteinObjectManager.Instance.SetHighlightAcidAminMesh(_proteinName, _order, false);
@@ -41,6 +33,7 @@ public class AtomCharacter : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         _order = info.Order;
         _proteinName = info.ProteinName;
         _textProtein.text = info.ShortName;
+        ToggleBackground(false);
     }
 
     public void ToggleBackground(bool value)
