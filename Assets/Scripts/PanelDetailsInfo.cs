@@ -7,6 +7,7 @@ public class PanelDetailsInfo : MonoBehaviour
 
     private void OnEnable()
     {
+        if ( ProteinObjectManager.Instance == null ) return;
         ProteinObjectManager.Instance.OnAminoAcidMeshSelected += PopulateDetailsInfo;
     }
 
@@ -17,6 +18,7 @@ public class PanelDetailsInfo : MonoBehaviour
 
     private void OnDisable()
     {
+        if ( ProteinObjectManager.Instance == null ) return;
         ProteinObjectManager.Instance.OnAminoAcidMeshSelected -= PopulateDetailsInfo;
     }
 

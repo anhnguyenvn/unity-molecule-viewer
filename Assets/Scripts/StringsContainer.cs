@@ -66,7 +66,7 @@ public class StringsContainer : MonoBehaviour
     {
         if ( ProteinObjectManager.Instance == null )
         {
-            Debug.LogError($"{typeof(ProteinObjectManager)} is null");
+            Debug.LogWarning($"{typeof(ProteinObjectManager)} is null");
             return;
         }
         ProteinObjectManager.Instance.OnAllProteinDataLoaded -= OnAllProteinDataLoaded;

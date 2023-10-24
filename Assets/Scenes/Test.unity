@@ -358,9 +358,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7f0c9b769b9d4948b55adee5bb96ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveForwardSpeed: 2
-  panningSpeed: 2
-  updownSpeed: 2
+  moveForwardSpeed: 3
+  panningSpeed: 3
+  updownSpeed: 3
   yawSpeed: 250
   tiltSpeed: 250
   boostSpeedFactor: 2
@@ -1500,7 +1500,7 @@ PrefabInstance:
     - target: {fileID: 312995255290187647, guid: 62228280bed771d4aa81ea00d39c22b9,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -10.000061
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 312995255290187647, guid: 62228280bed771d4aa81ea00d39c22b9,
         type: 3}
