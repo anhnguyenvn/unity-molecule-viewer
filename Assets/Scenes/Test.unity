@@ -1724,6 +1724,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxRayDistance: 6
   _sphereCastRadius: 1
+  _castingLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!54 &2070740113
 Rigidbody:
   m_ObjectHideFlags: 0
