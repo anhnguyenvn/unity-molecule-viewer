@@ -237,11 +237,11 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
                _proteinFocusedStates[proteinName];
     }
 
-    public void RaiseAminoMeshSelected(AminoAcidMeshSelection e)
+    public void RaiseAminoMeshSelected(AminoAcidMeshSelection selectedMesh)
     {
-        if ( IsProteinFocused(e._proteinName) )
+        if ( IsProteinFocused(selectedMesh._proteinName) )
         {
-            OnAminoAcidMeshSelected?.Invoke(this, e);
+            OnAminoAcidMeshSelected?.Invoke(this, selectedMesh);
         }
     }
 
@@ -258,7 +258,7 @@ public class ProteinObjectManager : Singleton<ProteinObjectManager>
         StartCoroutine(LoadCoroutines(cifFilePaths, placeHodlers));
     }
 
-    IEnumerator LoadCoroutines(List<string> cifFilePaths, List<Transform> placeHodlers)
+    private IEnumerator LoadCoroutines(IReadOnlyList<string> cifFilePaths, IReadOnlyList<Transform> placeHodlers)
     {
         var minLoopTime = Mathf.Min(cifFilePaths.Count, placeHodlers.Count);
         for (int i = 0; i < minLoopTime; i++)

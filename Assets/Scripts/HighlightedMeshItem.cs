@@ -98,24 +98,14 @@ public struct AminoAcidShortInfo
     
     private static string StringByConfidence(float confidence)
     {
-        if ( confidence >= 90f )
+        return confidence switch
         {
-            return "Very high";
-        }
-        else if ( confidence >= 70f && confidence < 90 )
-        {
-            return "Confident";
-        }
-        else if ( confidence >= 50f && confidence < 70 )
-        {
-            return "Low";
-        }
-        else if ( confidence < 50 )
-        {
-            return "Very low";
-        }
-
-        return string.Empty;
+            >= 90f => "Very high",
+            >= 70f and < 90 => "Confident",
+            >= 50f and < 70 => "Low",
+            < 50 => "Very low",
+            _ => string.Empty
+        };
     }
 
     public override bool Equals(object obj)

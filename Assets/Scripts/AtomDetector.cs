@@ -6,6 +6,10 @@ public class AtomDetector : MonoBehaviour
 {
     [SerializeField] private float _maxRayDistance = 2.0f;
     [SerializeField] private float _sphereCastRadius = 1f;
+
+    [SerializeField] private LayerMask _castingLayer;
+    
+    
     
 
     private List<HighlightedMeshItem> _meshesInRange = new List<HighlightedMeshItem>();
@@ -19,35 +23,35 @@ public class AtomDetector : MonoBehaviour
     private bool hasJustFoundAtom = false;
     private bool hasJustLostAtom = false;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
-        {
-            if ( !_meshesInRange.Contains(meshItem) )
-            {
-                _itemInRange = true;
-                _meshesInRange.Add(meshItem);
-            }
-        }
-    }
+    // private void OnTriggerEnter(Collider other)
+    // {
+        // if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
+        // {
+        //     if ( !_meshesInRange.Contains(meshItem) )
+        //     {
+        //         _itemInRange = true;
+        //         _meshesInRange.Add(meshItem);
+        //     }
+        // }
+    // }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
-        {
-            if ( _meshesInRange.Contains(meshItem) )
-            {
-                _meshesInRange.Remove(meshItem);
-            }
-
-            if ( _meshesInRange.Count == 0 )
-            {
-                _nearestItem = null;
-                _itemInRange = false;
-                OnChangedNearestItem?.Invoke(string.Empty);
-            }
-        }
-    }
+    // private void OnTriggerExit(Collider other)
+    // {
+        // if ( other.TryGetComponent<HighlightedMeshItem>(out var meshItem) )
+        // {
+        //     if ( _meshesInRange.Contains(meshItem) )
+        //     {
+        //         _meshesInRange.Remove(meshItem);
+        //     }
+        //
+        //     if ( _meshesInRange.Count == 0 )
+        //     {
+        //         _nearestItem = null;
+        //         _itemInRange = false;
+        //         OnChangedNearestItem?.Invoke(string.Empty);
+        //     }
+        // }
+    // }
 
     private void OnDrawGizmos()
     {

@@ -731,7 +731,7 @@ namespace UMol
 
                             if ( !allHelixFields )
                             {
-                                Debug.LogError("Not enough mmCIF fields describing helices => Ignoring helices");
+                                Debug.LogWarning("Not enough mmCIF fields describing helices => Ignoring helices");
                                 readHelixLine = false;
                             }
                         }

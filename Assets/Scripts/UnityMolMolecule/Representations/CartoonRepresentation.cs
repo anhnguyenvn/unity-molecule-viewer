@@ -573,7 +573,7 @@ namespace UMol
                     var missingVertexCount = segmentMeshData.triangles[vertexIndex] - (segmentMeshData.vertices.Length - 1);
                     if ( missingVertexCount > 0 )
                     {
-                        Debug.Log($"<color=red>--Outbound vertex index {segmentMeshData.triangles[vertexIndex]} at {vertexIndex}, {missingVertexCount} vertices needed!!</color>");
+                        // Debug.Log($"<color=red>--Outbound vertex index {segmentMeshData.triangles[vertexIndex]} at {vertexIndex}, {missingVertexCount} vertices needed!!</color>");
                         segmentMeshData.triangles[vertexIndex] = segmentMeshData.vertices.Length - 1;
                     }
                 }
